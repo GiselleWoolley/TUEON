@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Diário da Gira</title>
+<title>Diário de Desenvolvimento</title>
 <meta name="description" content="Diário de desenvolvimento mediúnico da turma: registros, roda de partilha, caderno e diagnóstico da caminhada.">
 <meta name="theme-color" content="#F2F5F8">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -35,7 +35,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17p
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
 .wrap{max-width:640px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 64px}
 header.top{display:flex;flex-direction:column;gap:4px;padding-block:8px 16px}
-h1{font-family:var(--display);font-weight:700;font-size:2.1rem;line-height:1.1;margin:0;text-wrap:balance}
+h1{font-family:var(--display);font-weight:700;font-size:1.9rem;line-height:1.1;margin:0;text-wrap:balance}
 .sub{color:var(--muted);margin:0}
 nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;gap:4px;padding-block:8px;border-bottom:1px solid var(--line);margin-bottom:20px;overflow-x:auto}
 nav.tabs button{flex:1 0 auto;font:inherit;font-weight:500;font-size:.95rem;background:none;border:0;color:var(--muted);padding:8px 12px;border-radius:999px;cursor:pointer}
@@ -180,7 +180,7 @@ header.top>.ht{display:flex;flex-direction:column;gap:4px;min-width:0}
 .login-box{width:100%;max-width:400px;display:flex;flex-direction:column;gap:18px}
 .login-top{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
 .login-top .emblema{width:132px;height:132px}
-.login-top h1{font-size:2.3rem}
+.login-top h1{font-size:2rem}
 .login form{display:flex;flex-direction:column;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px}
 .login form h2{font-size:1.3rem;margin:0}
 .login label.f{display:flex;flex-direction:column;gap:4px;font-size:.92rem;font-weight:500}
@@ -231,10 +231,10 @@ header.top>.ht{display:flex;flex-direction:column;gap:4px;min-width:0}
 :root{--fundo-op:.12}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--fundo-op:.16}}
 :root[data-theme="dark"]{--fundo-op:.16}
-#fundo{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:var(--fundo-op)}
+#fundo{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
 .hero{display:inline-flex;align-items:center;gap:10px;font:inherit;background:none;border:0;padding:0;margin:0 0 2px;color:var(--ink);cursor:pointer;text-align:left}
 .hero .ic{width:30px;height:30px;stroke-width:1.5;color:var(--c,var(--candle))}
-.hero .w{font-family:var(--display);font-style:italic;font-weight:700;font-size:1.7rem;line-height:1.1;color:var(--c,var(--candle))}
+.hero .w{font-family:var(--display);font-style:italic;font-weight:700;font-size:1.35rem;line-height:1.1;color:var(--c,var(--candle))}
 .hero small{display:block;font-size:.8rem;color:var(--muted);line-height:1.2}
 .hero-login{align-self:center;justify-content:center;text-align:center}
 .faixa{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 18px;padding:14px 0;margin:2px 0 6px;
@@ -264,11 +264,9 @@ nav.tabs button .ic{width:16px;height:16px}
   <div class="login-box">
     <div class="login-top">
       <svg class="emblema emblema-svg" viewBox="0 0 120 120" aria-hidden="true"></svg>
-      <div class="kicker-top">Umbanda · diário de desenvolvimento</div>
-      <h1>Diário da Gira</h1>
-      <button type="button" class="hero hero-login" data-hero title="Toque para outra saudação"></button>
+      <div class="kicker-top">Umbanda</div>
+      <h1>Diário de Desenvolvimento</h1>
     </div>
-    <div class="faixa" data-faixa></div>
     <div class="msg erro" id="login-config" hidden>O app ainda não foi ligado ao Supabase. Preencha SUPABASE_URL e SUPABASE_ANON_KEY no arquivo index.html.</div>
     <div class="msg" id="login-msg" hidden></div>
 
@@ -314,15 +312,13 @@ nav.tabs button .ic{width:16px;height:16px}
   <header class="top">
     <svg class="guia" id="guia" viewBox="0 0 640 64" aria-hidden="true"></svg>
     <div class="ht">
-    <button type="button" class="hero" data-hero title="Toque para outra saudação"></button>
-    <div class="kicker-top">Umbanda · diário de desenvolvimento</div>
-    <h1>Diário da Gira</h1>
+    <div class="kicker-top">Umbanda</div>
+    <h1>Diário de Desenvolvimento</h1>
     <p class="sub">Piloto da turma · registre o que sentiu, partilhe se quiser</p>
     <div class="ident" id="ident" hidden></div>
     </div>
     <svg class="emblema emblema-svg" id="emblema" viewBox="0 0 120 120" aria-hidden="true"></svg>
   </header>
-  <div class="faixa" data-faixa></div>
 
   <nav class="tabs" role="tablist" aria-label="Seções">
     <button role="tab" id="t-registrar" aria-selected="true" data-tab="registrar">Registrar</button>
@@ -608,25 +604,24 @@ const SAUD=[
  {w:"Epa Babá",m:"salve Oxalá",k:"sol"},
  {w:"Dois-dois",m:"salve a Ibejada, as crianças",k:"ere"}
 ];
-let saudI=Math.floor(Date.now()/864e5)%SAUD.length;
-function pintaHero(){const s=SAUD[saudI];document.querySelectorAll("[data-hero]").forEach(h=>{h.style.setProperty("--c",corIc(s.k));
-  h.innerHTML=`${icC(s.k)}<span><span class="w">${esc(s.w)}!</span><small>${esc(s.m)}</small></span>`})}
-document.querySelectorAll("[data-hero]").forEach(h=>h.onclick=()=>{saudI=(saudI+1)%SAUD.length;pintaHero()});pintaHero();
-document.querySelectorAll("[data-faixa]").forEach(f=>{f.innerHTML=SAUD.map(s=>`<span class="w" style="--c:${corIc(s.k)}">${icC(s.k)}${esc(s.w)}</span>`).join("")});
 // rodapé: roda de símbolos + bênção
 document.querySelectorAll("[data-rodape]").forEach(f=>{
   f.innerHTML=`<svg class="emblema emblema-svg" viewBox="0 0 120 120" aria-hidden="true"></svg>
     <div class="w">Axé, saravá e boa caminhada.</div>
     <div class="linha-ic">${["estrela","folha","chama","lua","cruzeiro","coracao","sol"].map(k=>icC(k)).join("")}</div>`;
   f.querySelector(".emblema-svg").innerHTML=document.querySelector("#emblema").innerHTML});
-// fundo: símbolos espalhados, sempre na mesma disposição
+// fundo: símbolos e palavras espalhados, sempre na mesma disposição
 (()=>{const ks=["estrela","folha","chama","lua","cruzeiro","coracao","sol","exu","caboclo","ere","oxe","calice","pretovelho","trevo","raio","ondas","pombagira","cigano","chave","orixa","lampiao","roda","malandro","estrela5"];
+  const PAL=[["Axé","estrela"],["Saravá","folha"],["Laroyê","exu"],["Adorei as almas","pretovelho"],["Okê arô","caboclo"],["Epa Babá","sol"],["Dois-dois","ere"]];
+  const WI=[2,7,10,14,17,19,22];
   let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
-  const T=560,N=5,C=T/N;let g="";
-  for(let i=0;i<N*N;i++){const k=ks[i%ks.length],cx=(i%N)*C,cy=Math.floor(i/N)*C,s=1.5+rnd()*.8,sz=24*s,
-    x=cx+8+rnd()*(C-sz-16),y=cy+8+rnd()*(C-sz-16),r=Math.round((rnd()-.5)*50);
-    g+=`<g transform="translate(${x.toFixed(0)} ${y.toFixed(0)}) rotate(${r} ${(12*s).toFixed(0)} ${(12*s).toFixed(0)}) scale(${s.toFixed(2)})" style="color:${corIc(k)}" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${ICON[k]}</g>`}
-  $("#fundo").innerHTML=`<defs><pattern id="pf" width="${T}" height="${T}" patternUnits="userSpaceOnUse">${g}</pattern></defs><rect width="100%" height="100%" fill="url(#pf)"/>`})();
+  const COLS=6,ROWS=4,CW=150,CH=160,TW=COLS*CW,TH=ROWS*CH;let g="",si=0;
+  for(let i=0;i<COLS*ROWS;i++){const cx=(i%COLS)*CW,cy=Math.floor(i/COLS)*CH,wi=WI.indexOf(i);
+    if(wi>=0){const [w,k]=PAL[wi],r=Math.round((rnd()-.5)*24);
+      g+=`<text x="${(cx+CW/2).toFixed(0)}" y="${(cy+CH/2+6).toFixed(0)}" text-anchor="middle" transform="rotate(${r} ${(cx+CW/2).toFixed(0)} ${(cy+CH/2).toFixed(0)})" style="fill:${corIc(k)};font-family:var(--display);font-style:italic;font-weight:700;font-size:21px;opacity:calc(var(--fundo-op)*1.7)">${esc(w)}</text>`;continue}
+    const k=ks[si++%ks.length],s=1.4+rnd()*.7,sz=24*s,x=cx+8+rnd()*(CW-sz-16),y=cy+8+rnd()*(CH-sz-16),r=Math.round((rnd()-.5)*50);
+    g+=`<g transform="translate(${x.toFixed(0)} ${y.toFixed(0)}) rotate(${r} ${(12*s).toFixed(0)} ${(12*s).toFixed(0)}) scale(${s.toFixed(2)})" style="color:${corIc(k)};opacity:var(--fundo-op)" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${ICON[k]}</g>`}
+  $("#fundo").innerHTML=`<defs><pattern id="pf" width="${TW}" height="${TH}" patternUnits="userSpaceOnUse">${g}</pattern></defs><rect width="100%" height="100%" fill="url(#pf)"/>`})();
 // cabeçalho de cada aba + ícones nas abas
 const ABA={registrar:{w:"Saravá",k:"folha",ic:"chama"},minhas:{w:"Axé",k:"estrela",ic:"cruzeiro"},mapa:{w:"Adorei as almas",k:"pretovelho",ic:"estrela5"},roda:{w:"Salve a turma",k:"roda",ic:"roda"},caderno:{w:"Axé, minha gente",k:"lua",ic:"lua"},turmas:{w:"Laroyê",k:"chave",ic:"chave"}};
 document.querySelectorAll("nav.tabs button").forEach(b=>{const a=ABA[b.dataset.tab];if(a)b.insertAdjacentHTML("afterbegin",icC(a.ic))});
@@ -696,7 +691,7 @@ async function renderTurmas(){
       <span class="mine-actions"><button class="btn ghost" data-copy>Copiar convite</button><button class="x" data-cancel>Cancelar</button></span></li>`}).join("")
     :`<li><span class="note">Nenhum convite pendente.</span></li>`;
   cl.querySelectorAll("li[data-email]").forEach(li=>{const c=pend.find(x=>x.email===li.dataset.email);
-    li.querySelector("[data-copy]").onclick=async()=>{const txt=`Olá, ${c.nome||""}! Você foi convidada(o) para o Diário da Gira. Acesse ${location.origin}${location.pathname}, toque em "Primeiro acesso" e crie sua senha usando este e-mail: ${c.email}`;
+    li.querySelector("[data-copy]").onclick=async()=>{const txt=`Olá, ${c.nome||""}! Você foi convidada(o) para o Diário de Desenvolvimento. Acesse ${location.origin}${location.pathname}, toque em "Primeiro acesso" e crie sua senha usando este e-mail: ${c.email}`;
       try{await navigator.clipboard.writeText(txt);toast("Convite copiado. Agora é só enviar.")}catch(e){prompt("Copie o convite:",txt)}};
     li.querySelector("[data-cancel]").onclick=async()=>{const{error}=await S.sb.from("convites").delete().eq("email",c.email);if(error)toast("Não foi possível cancelar.");else{toast("Convite cancelado");carregar()}}});
   // turmas
@@ -1037,7 +1032,7 @@ async function gerarPDF(){
       doc.addImage(MAPA.ultImg.riscadoImg,"JPEG",M,y,w,h);y+=h+5;
       if(MAPA.ultImg.riscadoTexto){const r=doc.splitTextToSize(MAPA.ultImg.riscadoTexto,CW);cabe(r.length*5.5);doc.setFont("times","italic");doc.setFontSize(12);doc.setTextColor(...INK);doc.text(r,M,y);y+=r.length*5.5}}catch(e){}}
     const tot=doc.getNumberOfPages();for(let i=1;i<=tot;i++){doc.setPage(i);doc.setFont("helvetica","normal");doc.setFontSize(8);doc.setTextColor(...MUT);
-      doc.text("Diário da Gira · relatório pessoal e privado",M,289);doc.text(`${i} / ${tot}`,W-M,289,{align:"right"})}
+      doc.text("Diário de Desenvolvimento · relatório pessoal e privado",M,289);doc.text(`${i} / ${tot}`,W-M,289,{align:"right"})}
     doc.save(`diagnostico-da-caminhada-${new Date().toISOString().slice(0,10)}.pdf`);
     toast("PDF gerado");
   }catch(e){toast("Não foi possível gerar o PDF.")}
