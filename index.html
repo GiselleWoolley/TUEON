@@ -37,8 +37,8 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 header.top{display:flex;flex-direction:column;gap:4px;padding-block:8px 16px}
 h1{font-family:var(--display);font-weight:700;font-size:1.9rem;line-height:1.1;margin:0;text-wrap:balance}
 .sub{color:var(--muted);margin:0}
-nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;gap:4px;padding-block:8px;border-bottom:1px solid var(--line);margin-bottom:20px;overflow-x:auto}
-nav.tabs button{flex:1 0 auto;font:inherit;font-weight:500;font-size:.95rem;background:none;border:0;color:var(--muted);padding:8px 12px;border-radius:999px;cursor:pointer}
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;gap:4px;padding-block:8px;border-bottom:1px solid var(--line);margin-bottom:20px;flex-wrap:wrap}
+nav.tabs button{flex:1 1 auto;font:inherit;font-weight:500;font-size:.95rem;background:none;border:0;color:var(--muted);padding:8px 12px;border-radius:999px;cursor:pointer}
 nav.tabs button[aria-selected="true"]{background:var(--accent-soft);color:var(--ink)}
 button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,label.chip:focus-within{outline:2px solid var(--accent);outline-offset:2px}
 
@@ -253,6 +253,14 @@ nav.tabs button .ic{width:16px;height:16px}
 .rodape .linha-ic{display:flex;gap:10px;justify-content:center}
 .rodape .linha-ic .ic{width:20px;height:20px;color:var(--c)}
 .login-rodape{margin-top:8px}
+.admin-bar{display:flex;align-items:center;gap:12px;background:var(--candle-soft);border:1px solid var(--candle);border-radius:14px;padding:10px 14px;margin:4px 0 10px}
+.admin-bar .ic{width:26px;height:26px;color:var(--candle);stroke-width:1.5}
+.admin-bar b{display:block;font-family:var(--display);font-size:1.15rem;line-height:1.2}
+.admin-bar span{font-size:.85rem;color:var(--muted)}
+.part li{flex-wrap:wrap}
+.part .n{font-variant-numeric:tabular-nums;font-size:.92rem;text-align:right}
+.part .zero{color:var(--muted)}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
 .card .marca{position:absolute;right:12px;top:12px;width:34px;height:34px;color:var(--c);opacity:.22;pointer-events:none;stroke-width:1.3}
 .card{position:relative}
 </style>
@@ -320,7 +328,10 @@ nav.tabs button .ic{width:16px;height:16px}
     <svg class="emblema emblema-svg" id="emblema" viewBox="0 0 120 120" aria-hidden="true"></svg>
   </header>
 
+  <div class="admin-bar" id="admin-bar" hidden></div>
+
   <nav class="tabs" role="tablist" aria-label="Seções">
+    <button role="tab" id="t-painel" aria-selected="false" data-tab="painel" hidden>Painel</button>
     <button role="tab" id="t-registrar" aria-selected="true" data-tab="registrar">Registrar</button>
     <button role="tab" id="t-minhas" aria-selected="false" data-tab="minhas">Meus registros</button>
     <button role="tab" id="t-mapa" aria-selected="false" data-tab="mapa">Meu mapa</button>
@@ -332,6 +343,16 @@ nav.tabs button .ic{width:16px;height:16px}
   <div class="orn" id="orn"></div>
   <div class="turmabar" id="turmabar" hidden></div>
 
+
+  <!-- PAINEL (dirigente) -->
+  <section id="p-painel" role="tabpanel" hidden>
+    <div class="cad-head">
+      <div class="kicker">Acompanhamento · <span id="painel-turma"></span></div>
+      <h2>Painel da turma</h2>
+      <p class="sub">Participação, dados coletados e material da turma.</p>
+    </div>
+    <div id="painel"></div>
+  </section>
 
   <!-- REGISTRAR -->
   <section id="p-registrar" role="tabpanel">
@@ -488,7 +509,7 @@ nav.tabs button .ic{width:16px;height:16px}
   <!-- TURMAS (dirigente) -->
   <section id="p-turmas" role="tabpanel" hidden>
     <h2>Turmas e convites</h2>
-    <p class="lead">Convide as pessoas, crie turmas e coloque cada cursista na sua. Os diários continuam privados: nem a dirigente lê.</p>
+    <p class="lead">Convide as pessoas, crie turmas e coloque cada cursista na sua. Os diários individuais continuam privados: o painel mostra só contagens e o que a turma escolheu partilhar.</p>
 
     <section class="cad">
       <h3>Convidar alguém</h3>
@@ -623,7 +644,7 @@ document.querySelectorAll("[data-rodape]").forEach(f=>{
     g+=`<g transform="translate(${x.toFixed(0)} ${y.toFixed(0)}) rotate(${r} ${(12*s).toFixed(0)} ${(12*s).toFixed(0)}) scale(${s.toFixed(2)})" style="color:${corIc(k)};opacity:var(--fundo-op)" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${ICON[k]}</g>`}
   $("#fundo").innerHTML=`<defs><pattern id="pf" width="${TW}" height="${TH}" patternUnits="userSpaceOnUse">${g}</pattern></defs><rect width="100%" height="100%" fill="url(#pf)"/>`})();
 // cabeçalho de cada aba + ícones nas abas
-const ABA={registrar:{w:"Saravá",k:"folha",ic:"chama"},minhas:{w:"Axé",k:"estrela",ic:"cruzeiro"},mapa:{w:"Adorei as almas",k:"pretovelho",ic:"estrela5"},roda:{w:"Salve a turma",k:"roda",ic:"roda"},caderno:{w:"Axé, minha gente",k:"lua",ic:"lua"},turmas:{w:"Laroyê",k:"chave",ic:"chave"}};
+const ABA={painel:{w:"Axé, dirigente",k:"sol",ic:"sol"},registrar:{w:"Saravá",k:"folha",ic:"chama"},minhas:{w:"Axé",k:"estrela",ic:"cruzeiro"},mapa:{w:"Adorei as almas",k:"pretovelho",ic:"estrela5"},roda:{w:"Salve a turma",k:"roda",ic:"roda"},caderno:{w:"Axé, minha gente",k:"lua",ic:"lua"},turmas:{w:"Laroyê",k:"chave",ic:"chave"}};
 document.querySelectorAll("nav.tabs button").forEach(b=>{const a=ABA[b.dataset.tab];if(a)b.insertAdjacentHTML("afterbegin",icC(a.ic))});
 function pintaOrn(t){const a=ABA[t]||ABA.registrar;const o=$("#orn");o.innerHTML=`<span class="w" style="--c:${corIc(a.k)}">${icC(a.k)}${esc(a.w)}</span>`}
 // ponto riscado: imagem reduzida e guardada junto do registro
@@ -646,8 +667,8 @@ scale($("#f-int"),"int",INT);scale($("#f-ent"),"ent",ENT);
 $("#f-data").value=new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
 
 // abas
-const TABS=["registrar","minhas","mapa","roda","caderno","turmas"];
-function show(t){if($("#t-"+t).hidden)t="registrar";TABS.forEach(x=>{$("#p-"+x).hidden=x!==t;$("#t-"+x).setAttribute("aria-selected",x===t)});pintaOrn(t);$("#turmabar").hidden=!["registrar","roda","caderno"].includes(t)||!S.turmasVis().length;try{localStorage.setItem("dg-tab",t)}catch(e){}}
+const TABS=["painel","registrar","minhas","mapa","roda","caderno","turmas"];
+function show(t){if($("#t-"+t).hidden)t=S.admin?"painel":"registrar";TABS.forEach(x=>{$("#p-"+x).hidden=x!==t;$("#t-"+x).setAttribute("aria-selected",x===t)});pintaOrn(t);$("#turmabar").hidden=!["painel","registrar","roda","caderno"].includes(t)||!S.turmasVis().length;try{localStorage.setItem("dg-tab",t)}catch(e){}}
 document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>show(b.dataset.tab));
 function toast(msg){const t=document.createElement("div");t.className="toast";t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
 
@@ -666,17 +687,21 @@ async function nomes(ids){
 }
 
 function aplicarPerfil(){
-  $("#t-turmas").hidden=!S.admin;
+  $("#t-turmas").hidden=!S.admin;$("#t-painel").hidden=!S.admin;
+  ["registrar","minhas","mapa"].forEach(x=>$("#t-"+x).hidden=S.admin);
+  const ab=$("#admin-bar");ab.hidden=!S.admin;
+  if(S.admin)ab.innerHTML=`${icC("chave")}<div><b>Área do dirigente</b><span>acompanhamento das turmas, convites e dados coletados</span></div>`;
+  const sb=document.querySelector("header.top .sub");if(sb)sb.textContent=S.admin?"Acompanhe as turmas e o material coletado":"Registre o que sentiu, partilhe se quiser";
   const vis=S.turmasVis();
   if(!vis.find(t=>t.id===S.turmaSel)){S.turmaSel=vis[0]?vis[0].id:null}
   const bar=$("#turmabar");
   if(vis.length>1){bar.innerHTML=`<span>Turma</span><select id="turma-sel" aria-label="Escolher turma">${vis.map(t=>`<option value="${esc(t.id)}" ${t.id===S.turmaSel?"selected":""}>${esc(t.nome)}</option>`).join("")}</select>`;
-    $("#turma-sel").onchange=ev=>{S.turmaSel=ev.target.value;renderRoda();renderCaderno()}}
+    $("#turma-sel").onchange=ev=>{S.turmaSel=ev.target.value;renderRoda();renderCaderno();renderPainel()}}
   else if(vis.length===1){bar.innerHTML=`<span>Turma</span><b></b>`;bar.querySelector("b").textContent=vis[0].nome}
   const semTurma=!S.turmaSel;
   $("#sem-turma").hidden=!semTurma;$("#fs-partilha").hidden=semTurma;$("#fs-caderno").hidden=semTurma;
   const cur=TABS.find(x=>!$("#p-"+x).hidden)||"registrar";show(cur);
-  renderRoda();renderCaderno();renderTurmas();
+  renderRoda();renderCaderno();renderTurmas();renderPainel();
 }
 
 async function renderTurmas(){
@@ -1087,6 +1112,54 @@ function renderCaderno(){
     </section>
     <p class="note">Tudo aqui é anônimo e vem só de registros autorizados para o caderno. Antes de circular fora da turma, o material passa pelo dirigente.</p>`;
   const sel=$("#cad-linha");if(sel)sel.onchange=()=>{linhaSel=sel.value;renderCaderno()};
+}
+
+function csvCelula(v){let t=Array.isArray(v)?v.join(", "):String(v??"");if(/^[=+\-@\t\r]/.test(t))t="'"+t;return'"'+t.replace(/"/g,'""')+'"'}
+function baixarCSV(nome,linhas){const txt="\ufeff"+linhas.map(l=>l.map(csvCelula).join(";")).join("\r\n");
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type:"text/csv;charset=utf-8"}));a.download=nome;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1500)}
+const slug=t=>String(t||"turma").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"turma";
+async function renderPainel(){
+  if(!S.admin)return;
+  const el=$("#painel"),turma=S.turmaSel,tn=S.turmas.find(t=>t.id===turma);
+  $("#painel-turma").textContent=tn?tn.nome:"";
+  if(!turma){el.innerHTML=`<div class="empty"><b>Nenhuma turma ainda</b>Crie a primeira na aba Turmas e convide as pessoas. O painel aparece assim que houver gente na turma.</div>`;return}
+  const{data,error}=await S.sb.rpc("participacao",{t:turma});
+  if(turma!==S.turmaSel)return;
+  const L=S.caderno.filter(c=>c.turmaId===turma),R=S.roda.filter(r=>r.turmaId===turma);
+  const P=(data||[]).map(x=>({id:x.pessoa,nome:x.nome_pessoa,total:Number(x.total)||0,ultimo:x.ultimo}));
+  const aviso=error?`<div class="msg erro">Ainda falta ligar a participação no banco. No Supabase, abra o SQL Editor e rode o arquivo supabase-atualizacao-painel.sql. (Detalhe: ${esc(error.message||"")})</div>`:"";
+  const totalReg=P.reduce((a,b)=>a+b.total,0),sem=P.filter(p=>!p.total).length;
+  const linhas=count(L,"linhas"),sens=count(L,"sensacoes"),difs=count(L,"dificuldades");delete difs["Nada atrapalhou"];
+  el.innerHTML=`${aviso}
+    <div class="stats">
+      <div class="stat"><b>${P.length}</b><span>${P.length===1?"cursista":"cursistas"}</span></div>
+      <div class="stat"><b>${totalReg}</b><span>registros no total</span></div>
+      <div class="stat"><b>${R.length}</b><span>na roda</span></div>
+      <div class="stat"><b>${L.length}</b><span>no caderno</span></div>
+    </div>
+    <section class="cad"><h3>Participação por pessoa</h3>
+      ${P.length?`<ul class="membros part">${P.map(p=>`<li><span class="p"><b>${esc(p.nome||"Sem nome")}</b></span><span class="n ${p.total?"":"zero"}">${p.total?`${p.total} ${p.total>1?"registros":"registro"} · último em ${esc(fmtData((p.ultimo||"").slice(0,10)))}`:"ainda sem registro"}</span></li>`).join("")}</ul>
+      ${sem?`<p class="note">${sem} ${sem>1?"pessoas ainda não registraram":"pessoa ainda não registrou"} nada. Vale um convite gentil para a próxima gira.</p>`:""}`
+      :`<p class="note">Ainda não há cursistas nesta turma. Convide pessoas na aba Turmas.</p>`}
+      <p class="note">Aqui aparecem só contagens. O que cada pessoa escreve no diário continua privado.</p>
+    </section>
+    ${L.length?`<section class="cad"><h3>Linhas mais sentidas</h3>${bars(linhas)}</section>
+    <section class="cad"><h3>Sensações mais comuns</h3>${bars(sens)}</section>
+    ${Object.keys(difs).length?`<section class="cad"><h3>O que mais atrapalhou</h3>${bars(difs,"c")}</section>`:""}`
+    :`<section class="cad"><h3>Dados coletados</h3><p class="note">Ainda não há registros autorizados para o caderno nesta turma. Quando houver, as linhas, sensações e dificuldades mais comuns aparecem aqui.</p></section>`}
+    <section class="cad"><h3>Levar os dados</h3>
+      <div class="btns">
+        <button class="btn ghost" type="button" id="pn-caderno">Ver caderno completo</button>
+        <button class="btn ghost" type="button" id="pn-csv-part" ${P.length?"":"disabled"}>Baixar participação (CSV)</button>
+        <button class="btn ghost" type="button" id="pn-csv-cad" ${L.length?"":"disabled"}>Baixar dados do caderno (CSV)</button>
+      </div>
+      <p class="note">O caderno é anônimo e só traz registros que cada pessoa autorizou.</p>
+    </section>`;
+  const dia=new Date().toISOString().slice(0,10),sl=slug(tn&&tn.nome);
+  $("#pn-caderno").onclick=()=>show("caderno");
+  $("#pn-csv-part").onclick=()=>baixarCSV(`participacao-${sl}-${dia}.csv`,[["Nome","Registros","Último registro"],...P.map(p=>[p.nome,p.total,p.ultimo?fmtData(p.ultimo.slice(0,10)):""])]);
+  $("#pn-csv-cad").onclick=()=>baixarCSV(`caderno-${sl}-${dia}.csv`,[["Data","Tipo","Contexto","Linhas","Sensações","Intensidade (1-5)","Percepções","Dificuldades","Ponto mais tocante","Momento mais tocante"],
+    ...L.map(e=>[e.data?fmtData(e.data):"",e.tipo,e.contexto,e.linhas,e.sensacoes,e.intensidade,e.percepcoes,e.dificuldades,e.ponto,e.momento])]);
 }
 
 function renderAll(){renderMinhas();renderMapa();renderRoda();renderCaderno()}
