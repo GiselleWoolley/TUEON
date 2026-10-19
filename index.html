@@ -450,10 +450,11 @@ nav.tabs button .ic{width:16px;height:16px}
 
       <fieldset id="fs-partilha">
         <legend>Partilhar na roda?</legend>
+        <p class="hint">A dirigente acompanha a roda e sempre vê quem escreveu cada relato. “Sem meu nome” esconde o nome só das colegas.</p>
         <div class="radios" id="f-partilha">
           <label><input type="radio" name="partilha" value="nao" checked> <span>Não, fica só no meu diário</span></label>
           <label><input type="radio" name="partilha" value="nome"> <span>Sim, com meu nome</span></label>
-          <label><input type="radio" name="partilha" value="anonimo"> <span>Sim, sem meu nome</span></label>
+          <label><input type="radio" name="partilha" value="anonimo"> <span>Sim, sem meu nome para as colegas</span></label>
         </div>
       </fieldset>
 
@@ -491,7 +492,8 @@ nav.tabs button .ic{width:16px;height:16px}
   <!-- RODA -->
   <section id="p-roda" role="tabpanel" hidden>
     <h2>Roda de partilha</h2>
-    <p class="lead">Relatos que a turma escolheu partilhar. Aqui ninguém julga a experiência do outro.</p>
+    <p class="lead" id="roda-lead">Relatos que a turma escolheu partilhar. Aqui ninguém julga a experiência do outro.</p>
+    <div class="turmabar" id="roda-filtro" hidden></div>
     <div class="list" id="roda"></div>
   </section>
 
@@ -509,7 +511,7 @@ nav.tabs button .ic{width:16px;height:16px}
   <!-- TURMAS (dirigente) -->
   <section id="p-turmas" role="tabpanel" hidden>
     <h2>Turmas e convites</h2>
-    <p class="lead">Convide as pessoas, crie turmas e coloque cada cursista na sua. Os diários individuais continuam privados: o painel mostra só contagens e o que a turma escolheu partilhar.</p>
+    <p class="lead">Convide as pessoas, crie turmas e coloque cada cursista na sua. Os diários individuais continuam privados. Você acompanha as contagens e a roda de partilha, com a autoria de cada relato.</p>
 
     <section class="cad">
       <h3>Convidar alguém</h3>
@@ -673,7 +675,7 @@ document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>show(b.dat
 function toast(msg){const t=document.createElement("div");t.className="toast";t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
 
 // estado
-const S={sb:null,uid:null,perfil:null,minhas:[],roda:[],caderno:[],admin:false,
+const S={sb:null,uid:null,perfil:null,minhas:[],roda:[],caderno:[],admin:false,autoria:{},rodaPessoa:"",
   turmas:[],pessoas:[],convites:[],perfisMap:{},turmaSel:null};
 S.meuId=()=>S.uid;
 S.turmasVis=()=>S.admin?S.turmas:S.turmas.filter(t=>(t.membros||[]).includes(S.meuId()));
@@ -784,7 +786,9 @@ $("#f").addEventListener("submit",async ev=>{
     const{data:reg,error}=await S.sb.from("registros").insert({user_id:S.uid,dados:e}).select("id").single();
     if(error)throw error;
     if(e.partilha!=="nao"){const r=await S.sb.from("roda").insert({turma_id:S.turmaSel,registro_id:reg.id,autor_id:e.partilha==="nome"?S.uid:null,
-      dados:{relato:e.relato,riscadoTexto:e.riscadoTexto,riscadoImg:e.riscadoNaRoda?e.riscadoImg:null,...comum}});if(r.error)toast("O registro foi salvo, mas não entrou na roda.")}
+      dados:{relato:e.relato,riscadoTexto:e.riscadoTexto,riscadoImg:e.riscadoNaRoda?e.riscadoImg:null,...comum}}).select("id").single();
+      if(r.error)toast("O registro foi salvo, mas não entrou na roda.");
+      else{const au=await S.sb.from("roda_autoria").insert({roda_id:r.data.id,user_id:S.uid});if(au.error)toast("Partilhado, mas a autoria para a dirigente não foi registrada. Avise a dirigente.")}}
     if(e.caderno==="sim"){const c=await S.sb.from("caderno").insert({turma_id:S.turmaSel,registro_id:reg.id,dados:{...comum,dificuldades:e.dificuldades}});if(c.error)toast("O registro foi salvo, mas não entrou no caderno.")}
     await carregar();
     $("#f").reset();limparRiscado();syncTipo();scale($("#f-int"),"int",INT);scale($("#f-ent"),"ent",ENT);aplicarPerfil();
@@ -833,7 +837,7 @@ function renderMinhas(){
       ${e.dificuldades&&e.dificuldades.length?`<p class="note">Atrapalhou: ${esc(e.dificuldades.join(", "))}</p>`:""}
       ${moment(e)}${riscado(e)}
       ${e.relato?`<p class="relato">${esc(e.relato)}</p>`:""}
-      <div class="meta"><span>${e.partilha==="nao"?"Só no diário":e.partilha==="nome"?"Partilhado com nome":"Partilhado sem nome"}</span><span>${e.caderno==="sim"?"No caderno":"Fora do caderno"}</span></div>
+      <div class="meta"><span>${e.partilha==="nao"?"Só no diário":e.partilha==="nome"?"Partilhado com nome":"Partilhado sem nome para as colegas"}</span><span>${e.caderno==="sim"?"No caderno":"Fora do caderno"}</span></div>
       <div class="mine-actions" data-id="${esc(e.id)}"><button class="btn ghost danger" data-act="del">Apagar</button></div>
     </article>`).join("");
   el.querySelectorAll("[data-act=del]").forEach(b=>{
@@ -845,16 +849,29 @@ function renderMinhas(){
 }
 
 async function renderRoda(){
-  const el=$("#roda");
+  const el=$("#roda"),fl=$("#roda-filtro");
+  $("#roda-lead").textContent=S.admin?"Todos os relatos que a turma partilhou. Só você, dirigente, vê a autoria de cada um, mesmo quando a pessoa escolheu não mostrar o nome às colegas.":"Relatos que a turma escolheu partilhar. Aqui ninguém julga a experiência do outro.";
+  fl.hidden=true;
   if(!S.turmaSel){el.innerHTML=`<div class="empty"><b>Você ainda não está numa turma</b>${S.admin?"Crie uma turma na aba Turmas para abrir a roda.":"A roda aparece assim que o dirigente te colocar numa turma."}</div>`;return}
-  const R=S.roda.filter(r=>r.turmaId===S.turmaSel);
+  const autorReal=r=>r.autor||S.autoria[r.id]||null;
+  let R=S.roda.filter(r=>r.turmaId===S.turmaSel);
+  if(S.admin){
+    const ids=[...new Set(R.map(autorReal).filter(Boolean))];
+    if(S.rodaPessoa&&!ids.includes(S.rodaPessoa))S.rodaPessoa="";
+    if(ids.length){fl.hidden=false;fl.innerHTML=`<span>Pessoa</span><select id="roda-pessoa" aria-label="Filtrar por pessoa"><option value="">Todas</option>${ids.map(i=>`<option value="${esc(i)}" ${i===S.rodaPessoa?"selected":""}>${esc((S.perfisMap[i]&&S.perfisMap[i].nome)||"Sem nome")}</option>`).join("")}</select>`;
+      $("#roda-pessoa").onchange=ev=>{S.rodaPessoa=ev.target.value;renderRoda()}}
+    if(S.rodaPessoa)R=R.filter(r=>autorReal(r)===S.rodaPessoa);
+  }
   if(!R.length){el.innerHTML=`<div class="empty"><b>A roda desta turma ainda está vazia</b>Quando alguém marcar “Partilhar na roda” ao salvar um registro, o relato aparece aqui para a turma acolher.</div>`;return}
   el.innerHTML=R.map(r=>{
-    let who="Alguém da turma",av="";
+    let who="Alguém da turma",av="",nota="";
     if(r.autor&&r.autor===S.uid)who="Você";
     else if(r.autor&&S.perfisMap[r.autor])who=S.perfisMap[r.autor].nome||"Alguém da turma";
+    if(S.admin){const real=autorReal(r);
+      if(real){who=(S.perfisMap[real]&&S.perfisMap[real].nome)||"Sem nome";if(!r.autor)nota="partilhou sem nome para as colegas"}
+      else nota="autoria não registrada"}
     return`<article class="card" data-id="${esc(r.id)}"${corCard(r)}>
-      <div class="meta">${av?`<img src="${esc(av)}" alt="">`:""}<span class="who">${esc(who)}</span><span>${fmtData(r.data)}</span>${r.tipo?`<span class="tipo">${esc(r.tipo)}</span>`:""}
+      <div class="meta">${av?`<img src="${esc(av)}" alt="">`:""}<span class="who">${esc(who)}</span>${nota?`<span class="tipo">${esc(nota)}</span>`:""}<span>${fmtData(r.data)}</span>${r.tipo?`<span class="tipo">${esc(r.tipo)}</span>`:""}
         <span class="dots" aria-label="presença ${r.intensidade} de 5">${dots(r.intensidade)}</span></div>
       ${tagsL(r.linhas)}${tags(r.sensacoes,"s")}
       ${moment(r)}${riscado(r)}
@@ -1141,12 +1158,18 @@ async function renderPainel(){
       ${P.length?`<ul class="membros part">${P.map(p=>`<li><span class="p"><b>${esc(p.nome||"Sem nome")}</b></span><span class="n ${p.total?"":"zero"}">${p.total?`${p.total} ${p.total>1?"registros":"registro"} · último em ${esc(fmtData((p.ultimo||"").slice(0,10)))}`:"ainda sem registro"}</span></li>`).join("")}</ul>
       ${sem?`<p class="note">${sem} ${sem>1?"pessoas ainda não registraram":"pessoa ainda não registrou"} nada. Vale um convite gentil para a próxima gira.</p>`:""}`
       :`<p class="note">Ainda não há cursistas nesta turma. Convide pessoas na aba Turmas.</p>`}
-      <p class="note">Aqui aparecem só contagens. O que cada pessoa escreve no diário continua privado.</p>
+      <p class="note">Os números mostram só contagens. O que cada pessoa escreve no diário continua privado; você acompanha o que ela escolhe partilhar na roda, com autoria.</p>
     </section>
     ${L.length?`<section class="cad"><h3>Linhas mais sentidas</h3>${bars(linhas)}</section>
     <section class="cad"><h3>Sensações mais comuns</h3>${bars(sens)}</section>
     ${Object.keys(difs).length?`<section class="cad"><h3>O que mais atrapalhou</h3>${bars(difs,"c")}</section>`:""}`
     :`<section class="cad"><h3>Dados coletados</h3><p class="note">Ainda não há registros autorizados para o caderno nesta turma. Quando houver, as linhas, sensações e dificuldades mais comuns aparecem aqui.</p></section>`}
+    <section class="cad"><h3>Últimos relatos da roda</h3>
+      ${R.length?`<div class="quotes">${R.slice(0,5).map(r=>{const real=r.autor||S.autoria[r.id],nm=real?((S.perfisMap[real]&&S.perfisMap[real].nome)||"Sem nome"):"autoria não registrada";
+        const tx=(r.relato||r.momento||"").trim();return`<blockquote>${esc(tx.length>160?tx.slice(0,160)+"…":(tx||"(sem texto, só linhas e sensações)"))}<cite><b>${esc(nm)}</b> · ${esc(fmtData(r.data))}${r.linhas&&r.linhas.length?" · "+esc(r.linhas.join(", ")):""}${!r.autor&&real?" · sem nome para as colegas":""}</cite></blockquote>`}).join("")}</div>`
+      :`<p class="note">Ainda não há relatos partilhados na roda desta turma.</p>`}
+      <div class="btns"><button class="btn ghost" type="button" id="pn-roda">Abrir a roda completa</button></div>
+    </section>
     <section class="cad"><h3>Levar os dados</h3>
       <div class="btns">
         <button class="btn ghost" type="button" id="pn-caderno">Ver caderno completo</button>
@@ -1156,7 +1179,7 @@ async function renderPainel(){
       <p class="note">O caderno é anônimo e só traz registros que cada pessoa autorizou.</p>
     </section>`;
   const dia=new Date().toISOString().slice(0,10),sl=slug(tn&&tn.nome);
-  $("#pn-caderno").onclick=()=>show("caderno");
+  $("#pn-caderno").onclick=()=>show("caderno");$("#pn-roda").onclick=()=>show("roda");
   $("#pn-csv-part").onclick=()=>baixarCSV(`participacao-${sl}-${dia}.csv`,[["Nome","Registros","Último registro"],...P.map(p=>[p.nome,p.total,p.ultimo?fmtData(p.ultimo.slice(0,10)):""])]);
   $("#pn-csv-cad").onclick=()=>baixarCSV(`caderno-${sl}-${dia}.csv`,[["Data","Tipo","Contexto","Linhas","Sensações","Intensidade (1-5)","Percepções","Dificuldades","Ponto mais tocante","Momento mais tocante"],
     ...L.map(e=>[e.data?fmtData(e.data):"",e.tipo,e.contexto,e.linhas,e.sensacoes,e.intensidade,e.percepcoes,e.dificuldades,e.ponto,e.momento])]);
@@ -1174,10 +1197,13 @@ async function carregar(){
     S.sb.from("roda").select("id,turma_id,autor_id,dados,criado_em").order("criado_em",{ascending:false}).limit(300),
     S.sb.from("caderno").select("id,turma_id,dados").limit(2000),
     S.sb.from("perfis").select("id,nome,email,papel").order("nome"),
-    S.admin?S.sb.from("convites").select("*").order("criado_em",{ascending:false}):Promise.resolve({data:[]})
+    S.admin?S.sb.from("convites").select("*").order("criado_em",{ascending:false}):Promise.resolve({data:[]}),
+    S.admin?S.sb.from("roda_autoria").select("roda_id,user_id"):Promise.resolve({data:[]})
   ]);
-  if(q.some(r=>r.error)){toast("Não foi possível carregar tudo. Confira sua conexão.");}
-  const [t,m,reg,ro,ca,pf,cv]=q.map(r=>r.data||[]);
+  if(q.slice(0,7).some(r=>r.error)){toast("Não foi possível carregar tudo. Confira sua conexão.");}
+  S.autoriaErro=!!(q[7]&&q[7].error);
+  const [t,m,reg,ro,ca,pf,cv,au]=q.map(r=>r.data||[]);
+  S.autoria=Object.fromEntries(au.map(a=>[a.roda_id,a.user_id]));
   S.turmas=t.map(x=>({id:x.id,nome:x.nome,membros:m.filter(y=>y.turma_id===x.id).map(y=>y.user_id)}));
   S.minhas=reg.map(r=>({...r.dados,id:r.id}));
   S.roda=ro.map(r=>({...r.dados,id:r.id,turmaId:r.turma_id,autor:r.autor_id}));
