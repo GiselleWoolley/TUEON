@@ -1,0 +1,1190 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Diário da Gira</title>
+<meta name="description" content="Diário de desenvolvimento mediúnico da turma: registros, roda de partilha, caderno e diagnóstico da caminhada.">
+<meta name="theme-color" content="#F2F5F8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,500;0,700;1,500&family=Alegreya+Sans:wght@400;500;700&display=swap">
+<style>
+html{-webkit-text-size-adjust:100%}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+/* Layout: coluna única de leitura (máx. 640px), abas fixas no topo; cartões só para relatos e registros. */
+:root{
+  --bg:#F2F5F8; --surface:#FFFFFF; --ink:#17243A; --muted:#5A6A7E; --line:#D8E0E8;
+  --accent:#2A5EA4; --accent-ink:#FFFFFF; --accent-soft:#E2EBF7;
+  --candle:#B77A12; --candle-soft:#FBF1DC;
+  --danger:#B23A3A;
+  --display:"Alegreya",Georgia,"Times New Roman",serif;
+  --body:"Alegreya Sans","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0D1421; --surface:#151F31; --ink:#E7EDF5; --muted:#9AA8BA; --line:#25324A;
+  --accent:#86ABE6; --accent-ink:#0D1421; --accent-soft:#1C2B46;
+  --candle:#E8B44C; --candle-soft:#2A2416; --danger:#E58585; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0D1421; --surface:#151F31; --ink:#E7EDF5; --muted:#9AA8BA; --line:#25324A;
+  --accent:#86ABE6; --accent-ink:#0D1421; --accent-soft:#1C2B46;
+  --candle:#E8B44C; --candle-soft:#2A2416; --danger:#E58585; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:640px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 64px}
+header.top{display:flex;flex-direction:column;gap:4px;padding-block:8px 16px}
+h1{font-family:var(--display);font-weight:700;font-size:2.1rem;line-height:1.1;margin:0;text-wrap:balance}
+.sub{color:var(--muted);margin:0}
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;gap:4px;padding-block:8px;border-bottom:1px solid var(--line);margin-bottom:20px;overflow-x:auto}
+nav.tabs button{flex:1 0 auto;font:inherit;font-weight:500;font-size:.95rem;background:none;border:0;color:var(--muted);padding:8px 12px;border-radius:999px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--accent-soft);color:var(--ink)}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,label.chip:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+
+h2{font-family:var(--display);font-weight:700;font-size:1.5rem;margin:0 0 4px;text-wrap:balance}
+h3{font-family:var(--display);font-weight:500;font-size:1.15rem;margin:0}
+.lead{color:var(--muted);margin:0 0 20px}
+.banner{font-size:.9rem;color:var(--muted);background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin-bottom:20px}
+
+form{display:flex;flex-direction:column;gap:28px}
+fieldset{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:10px;min-width:0}
+legend{font-family:var(--display);font-size:1.15rem;font-weight:700;padding:0;margin-bottom:6px}
+.hint{font-size:.88rem;color:var(--muted);margin:-4px 0 4px}
+input[type=date],input[type=text],textarea,select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%}
+textarea{min-height:92px;resize:vertical}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+label.chip{position:relative;display:inline-flex;align-items:center;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;font-size:.95rem;cursor:pointer;user-select:none}
+label.chip input{position:absolute;opacity:0;width:1px;height:1px}
+label.chip:has(input:checked){background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.scale label{display:flex;flex-direction:column;align-items:center;gap:2px;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 2px;cursor:pointer;font-size:.78rem;color:var(--muted);text-align:center}
+.scale label b{font-family:var(--display);font-size:1.3rem;color:var(--ink)}
+.scale input{position:absolute;opacity:0;width:1px;height:1px}
+.scale label:has(input:checked){background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.scale label:has(input:checked) b{color:var(--accent-ink)}
+.scale label:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+
+.tocante{background:var(--candle-soft);border-radius:14px;padding:18px 16px;gap:12px}
+.tocante legend{float:left;width:100%;display:flex;align-items:center;gap:8px;color:var(--ink)}
+.flame{width:12px;height:18px;flex:none}
+.tocante .field{display:flex;flex-direction:column;gap:4px}
+.tocante .field span{font-size:.92rem;font-weight:500}
+
+.radios{display:flex;flex-direction:column;gap:6px}
+.radios label{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+.radios input{margin-top:5px;accent-color:var(--accent)}
+
+.btn{font:inherit;font-weight:700;background:var(--accent);color:var(--accent-ink);border:0;border-radius:12px;padding:14px 18px;cursor:pointer}
+.btn.ghost{background:none;color:var(--accent);border:1px solid var(--line);font-weight:500;padding:8px 14px;border-radius:999px;font-size:.92rem}
+.btn.danger{color:var(--danger)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-size:.95rem;z-index:20}
+
+.list{display:flex;flex-direction:column;gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.meta{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;font-size:.88rem;color:var(--muted)}
+.meta img{width:24px;height:24px;border-radius:50%}
+.who{font-weight:700;color:var(--ink)}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:.82rem;border-radius:999px;padding:2px 10px;background:var(--accent-soft)}
+.tag.s{background:none;border:1px solid var(--line);color:var(--muted)}
+.relato{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.moment{background:var(--candle-soft);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+.moment small{font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--candle);font-weight:700}
+.moment p{margin:0;font-family:var(--display);font-style:italic;overflow-wrap:anywhere}
+.dots{font-variant-numeric:tabular-nums;color:var(--accent);letter-spacing:2px}
+.acolhe{border-top:1px solid var(--line);padding-top:10px;display:flex;flex-direction:column;gap:8px}
+.acolhe .c{font-size:.93rem}
+.acolhe .c b{font-weight:700}
+.row{display:flex;gap:8px;align-items:center}
+.row input{flex:1;min-width:0}
+.empty{border:1px dashed var(--line);border-radius:14px;padding:24px 18px;color:var(--muted);text-align:left}
+.empty b{display:block;color:var(--ink);font-family:var(--display);font-size:1.1rem;margin-bottom:4px}
+
+/* Caderno */
+.cad-head{padding-bottom:16px;margin-bottom:20px;background:radial-gradient(circle,var(--pemba) 2.6px,transparent 3.2px) 0 100%/14px 10px repeat-x}
+.cad-head .kicker{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.cad-head h2{font-size:1.9rem}
+.stats{display:flex;flex-wrap:wrap;gap:24px;margin-bottom:28px}
+.stat b{display:block;font-family:var(--display);font-size:2rem;line-height:1;font-variant-numeric:tabular-nums}
+.stat span{font-size:.85rem;color:var(--muted)}
+section.cad{margin-bottom:32px;display:flex;flex-direction:column;gap:12px}
+.bars{display:flex;flex-direction:column;gap:8px}
+.bar{display:grid;grid-template-columns:minmax(90px,140px) 1fr 32px;gap:10px;align-items:center;font-size:.93rem}
+.bar .track{height:12px;background:var(--accent-soft);border-radius:6px;overflow:hidden}
+.bar .fill{height:100%;background:var(--accent);border-radius:6px}
+.bar.c .fill{background:var(--candle)}
+.bar .n{text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
+.rank{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:4px}
+.rank li span{color:var(--muted);font-size:.88rem}
+.quotes{display:flex;flex-direction:column;gap:10px}
+.quotes blockquote{margin:0;padding:4px 0 4px 14px;border-left:3px solid var(--candle);font-family:var(--display);font-style:italic;font-size:1.05rem}
+.quotes cite{display:block;font-style:normal;font-family:var(--body);font-size:.82rem;color:var(--muted);margin-top:2px}
+.note{font-size:.88rem;color:var(--muted)}
+.mine-actions{display:flex;gap:8px;flex-wrap:wrap}
+/* Identidade: guias (contas nas cores das linhas), pemba (traço de giz), vela */
+:root{--l-ere:#D2689A;--l-caboclo:#2E8650;--l-pretovelho:#4A4A4A;--l-exu:#B3262E;--l-pombagira:#8E1F4F;--l-cigano:#B97F0E;--l-orixa:#6F7BA8;--l-malandro:#C8352C;--on-c:#FFFFFF;--pemba:#C9D2DC}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--l-ere:#F09AC0;--l-caboclo:#62C485;--l-pretovelho:#C4C4C4;--l-exu:#EC6168;--l-pombagira:#E27AA6;--l-cigano:#E8B44C;--l-orixa:#C9D0EC;--l-malandro:#F2776B;--on-c:#0D1421;--pemba:#E9EEF4}}
+:root[data-theme="dark"]{--l-ere:#F09AC0;--l-caboclo:#62C485;--l-pretovelho:#C4C4C4;--l-exu:#EC6168;--l-pombagira:#E27AA6;--l-cigano:#E8B44C;--l-orixa:#C9D0EC;--l-malandro:#F2776B;--on-c:#0D1421;--pemba:#E9EEF4}
+.guia{display:block;width:100%;height:auto;max-height:64px;margin-bottom:4px}
+.kicker-top{font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.contas{height:10px;border:0;margin:4px 0;background:radial-gradient(circle,var(--pemba) 2.6px,transparent 3.2px) 0 50%/14px 10px repeat-x}
+#f-linhas label.chip:has(input:checked){background:var(--c);border-color:var(--c);color:var(--on-c)}
+.tag.l{display:inline-flex;align-items:center;gap:6px;background:none;border:1px solid var(--c);color:var(--ink)}
+
+.card{border-top:3px solid var(--c,var(--line))}
+.riscado-in{display:flex;flex-direction:column;gap:10px;border:2px dashed var(--pemba);border-radius:14px;padding:16px}
+.riscado-in .up{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.riscado-in input[type=file]{position:absolute;opacity:0;width:1px;height:1px}
+.riscado-in label.btn{display:inline-flex;cursor:pointer}
+.riscado-in label.btn:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.riscado-prev{max-width:100%;max-height:280px;border-radius:10px;align-self:flex-start;background:var(--bg)}
+figure.riscado{margin:0;display:flex;flex-direction:column;gap:8px;background:var(--bg);border-radius:12px;padding:10px}
+figure.riscado img{max-width:100%;max-height:320px;border-radius:8px;align-self:center}
+figure.riscado small{font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+figure.riscado figcaption{font-family:var(--display);font-style:italic;overflow-wrap:anywhere}
+.check{display:flex;gap:8px;align-items:flex-start;font-size:.95rem}
+.check input{margin-top:5px;accent-color:var(--accent)}
+.termo{display:flex;height:26px;border-radius:7px;overflow:hidden;gap:2px;margin-top:4px}
+.seg{min-width:0;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink);overflow:hidden}
+.seg.b,.termo-leg i.b{background:var(--pemba)}.seg.m,.termo-leg i.m{background:var(--accent-soft)}
+.seg.a,.termo-leg i.a{background:var(--accent);color:var(--accent-ink)}
+.entrega .seg.a,.entrega .termo-leg i.a{background:var(--candle);color:var(--on-c)}
+.termo-leg{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.82rem;color:var(--muted)}
+.termo-leg span{display:inline-flex;align-items:center;gap:6px}.termo-leg i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.indice{display:flex;align-items:baseline;gap:10px;margin-top:2px}
+.indice b{font-family:var(--display);font-size:2rem;line-height:1;color:var(--accent);font-variant-numeric:tabular-nums}
+.entrega .indice b{color:var(--candle)}
+.indice span{font-size:.9rem;color:var(--muted)}
+.tipo{font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:1px 8px}
+.diag{display:flex;flex-direction:column;gap:22px}
+.diag-sec{display:flex;flex-direction:column;gap:8px;padding-bottom:18px;background:radial-gradient(circle,var(--pemba) 2px,transparent 2.6px) 0 100%/12px 8px repeat-x}
+.diag-sec h3{font-family:var(--body);font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--accent)}
+.diag-sec p{margin:0;font-family:var(--display);font-size:1.12rem;line-height:1.6;max-width:62ch;text-wrap:pretty}
+.diag-sec p b{color:var(--accent);font-weight:700}
+#f[data-tipo="fora"] .so-terreiro,#f:not([data-tipo="fora"]) .so-fora,#f[data-tipo="fora"] .so-terreiro-i,#f:not([data-tipo="fora"]) .so-fora-i{display:none}
+#f-perc label.chip:has(input:checked){background:var(--candle);border-color:var(--candle);color:var(--on-c)}
+.ic{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none;display:inline-block;vertical-align:middle}
+#f-linhas label.chip .ic{color:var(--c);margin-right:6px}
+#f-linhas label.chip:has(input:checked) .ic{color:var(--on-c)}
+.tag.l .ic{width:15px;height:15px;color:var(--c)}
+.bar .lab{display:inline-flex;align-items:center;gap:6px;min-width:0}
+.bar .lab .ic{width:16px;height:16px}
+header.top{display:grid;grid-template-columns:1fr auto;column-gap:16px;align-items:center}
+header.top>.guia{grid-column:1/-1}
+header.top>.ht{display:flex;flex-direction:column;gap:4px;min-width:0}
+.emblema{width:104px;height:104px;color:var(--ink)}
+@media (max-width:460px){.emblema{width:76px;height:76px}}
+/* Login */
+.login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px}
+.login-box{width:100%;max-width:400px;display:flex;flex-direction:column;gap:18px}
+.login-top{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.login-top .emblema{width:132px;height:132px}
+.login-top h1{font-size:2.3rem}
+.login form{display:flex;flex-direction:column;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px}
+.login form h2{font-size:1.3rem;margin:0}
+.login label.f{display:flex;flex-direction:column;gap:4px;font-size:.92rem;font-weight:500}
+.login input{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px 12px;width:100%}
+.login .links{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.linkbtn{font:inherit;font-size:.92rem;background:none;border:0;color:var(--accent);cursor:pointer;padding:4px 0;text-decoration:underline;text-underline-offset:3px}
+.msg{font-size:.92rem;border-radius:10px;padding:10px 12px;background:var(--accent-soft)}
+.msg.erro{background:var(--candle-soft);color:var(--ink)}
+.ident .sair{margin-left:4px}
+.convites li{flex-wrap:wrap}
+.form-convite{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.form-convite input,.form-convite select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:9px 10px;width:100%;min-width:0}
+.form-convite .full{grid-column:1/-1}
+@media (max-width:460px){.form-convite{grid-template-columns:1fr}}
+/* Perfis e turmas */
+.role{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700;border-radius:999px;padding:2px 10px;background:var(--accent-soft);color:var(--ink)}
+.role.adm{background:var(--candle-soft);color:var(--candle)}
+.turmabar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:-8px 0 20px;font-size:.93rem;color:var(--muted)}
+.turmabar select{width:auto;max-width:100%;padding:6px 10px}
+.turmabar b{color:var(--ink)}
+.preview{display:flex;align-items:center;gap:8px;font-size:.88rem;color:var(--muted);margin-top:6px}
+.preview select{width:auto;padding:4px 8px;font-size:.88rem}
+.membros{display:flex;flex-direction:column;gap:6px;margin:0;padding:0;list-style:none}
+.membros li{display:flex;align-items:center;gap:8px;justify-content:space-between;border-bottom:1px solid var(--line);padding-block:6px}
+.membros li .p{display:flex;align-items:center;gap:8px;min-width:0}
+.membros img{width:24px;height:24px;border-radius:50%}
+.x{font:inherit;background:none;border:0;color:var(--muted);cursor:pointer;padding:4px 8px;border-radius:8px}
+.x:hover{color:var(--danger)}
+.stack{display:flex;flex-direction:column;gap:12px}
+/* Meu mapa */
+.ident{display:flex;align-items:center;gap:8px;font-size:.9rem;color:var(--muted);margin-top:6px}
+.ident img{width:22px;height:22px;border-radius:50%}
+.mapa{display:flex;flex-direction:column;gap:18px}
+.frase{display:flex;flex-direction:column;gap:4px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+.frase small{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.frase p{margin:0;font-family:var(--display);font-size:1.25rem;line-height:1.35;text-wrap:pretty}
+.frase p b{color:var(--accent)}
+.frase.dif p b{color:var(--candle)}
+.frase .note{margin:0}
+.porlinha{display:flex;flex-direction:column;gap:6px;margin:0;padding:0;list-style:none}
+.porlinha li{font-size:.98rem}
+.porlinha li b{font-weight:700}
+.acoes{display:flex;flex-wrap:wrap;gap:8px}
+@media (prefers-reduced-motion:no-preference){.card{animation:in .25s ease-out}@keyframes in{from{transform:translateY(4px)}to{transform:none}}}
+@media (max-width:420px){.scale label{font-size:.7rem}.bar{grid-template-columns:96px 1fr 28px}}
+/* Identidade 2: fundo de símbolos, saudações, ornamentos */
+#app,#tela-login{position:relative;z-index:1}
+:root{--fundo-op:.12}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--fundo-op:.16}}
+:root[data-theme="dark"]{--fundo-op:.16}
+#fundo{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:var(--fundo-op)}
+.hero{display:inline-flex;align-items:center;gap:10px;font:inherit;background:none;border:0;padding:0;margin:0 0 2px;color:var(--ink);cursor:pointer;text-align:left}
+.hero .ic{width:30px;height:30px;stroke-width:1.5;color:var(--c,var(--candle))}
+.hero .w{font-family:var(--display);font-style:italic;font-weight:700;font-size:1.7rem;line-height:1.1;color:var(--c,var(--candle))}
+.hero small{display:block;font-size:.8rem;color:var(--muted);line-height:1.2}
+.hero-login{align-self:center;justify-content:center;text-align:center}
+.faixa{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 18px;padding:14px 0;margin:2px 0 6px;
+  background:radial-gradient(circle,var(--pemba) 2px,transparent 2.6px) 0 0/12px 8px repeat-x,radial-gradient(circle,var(--pemba) 2px,transparent 2.6px) 0 100%/12px 8px repeat-x}
+.faixa .w{display:inline-flex;align-items:center;gap:6px;font-family:var(--display);font-style:italic;font-weight:500;font-size:1.05rem}
+.faixa .ic{width:17px;height:17px;color:var(--c)}
+.orn{display:flex;align-items:center;gap:12px;margin:0 0 18px}
+.orn::before,.orn::after{content:"";flex:1;height:10px;background:radial-gradient(circle,var(--pemba) 2.2px,transparent 2.8px) 0 50%/12px 10px repeat-x}
+.orn .w{display:inline-flex;align-items:center;gap:8px;font-family:var(--display);font-style:italic;font-weight:700;font-size:1.3rem;color:var(--c)}
+.orn .ic{width:26px;height:26px;stroke-width:1.5}
+nav.tabs button{display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
+nav.tabs button .ic{width:16px;height:16px}
+.rodape{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;margin-top:40px;color:var(--muted)}
+.rodape .emblema{width:72px;height:72px}
+.rodape .w{font-family:var(--display);font-style:italic;font-size:1.2rem;color:var(--ink)}
+.rodape .linha-ic{display:flex;gap:10px;justify-content:center}
+.rodape .linha-ic .ic{width:20px;height:20px;color:var(--c)}
+.login-rodape{margin-top:8px}
+.card .marca{position:absolute;right:12px;top:12px;width:34px;height:34px;color:var(--c);opacity:.22;pointer-events:none;stroke-width:1.3}
+.card{position:relative}
+</style>
+</head>
+<body>
+<svg id="fundo" aria-hidden="true"></svg>
+
+<main class="login" id="tela-login" hidden>
+  <div class="login-box">
+    <div class="login-top">
+      <svg class="emblema emblema-svg" viewBox="0 0 120 120" aria-hidden="true"></svg>
+      <div class="kicker-top">Umbanda · diário de desenvolvimento</div>
+      <h1>Diário da Gira</h1>
+      <button type="button" class="hero hero-login" data-hero title="Toque para outra saudação"></button>
+    </div>
+    <div class="faixa" data-faixa></div>
+    <div class="msg erro" id="login-config" hidden>O app ainda não foi ligado ao Supabase. Preencha SUPABASE_URL e SUPABASE_ANON_KEY no arquivo index.html.</div>
+    <div class="msg" id="login-msg" hidden></div>
+
+    <form id="f-entrar">
+      <h2>Entrar</h2>
+      <label class="f">E-mail<input type="email" id="le-email" autocomplete="email" required></label>
+      <label class="f">Senha<input type="password" id="le-senha" autocomplete="current-password" required></label>
+      <button class="btn" type="submit">Entrar</button>
+      <div class="links"><button type="button" class="linkbtn" data-ir="primeiro">Primeiro acesso</button><button type="button" class="linkbtn" data-ir="esqueci">Esqueci minha senha</button></div>
+    </form>
+
+    <form id="f-primeiro" hidden>
+      <h2>Primeiro acesso</h2>
+      <p class="note" style="margin:0">Use o e-mail em que você recebeu o convite da dirigente e crie sua senha.</p>
+      <label class="f">Seu nome<input type="text" id="lp-nome" autocomplete="name" maxlength="80" required></label>
+      <label class="f">E-mail do convite<input type="email" id="lp-email" autocomplete="email" required></label>
+      <label class="f">Crie uma senha (mínimo 8 caracteres)<input type="password" id="lp-senha" autocomplete="new-password" minlength="8" required></label>
+      <label class="f">Repita a senha<input type="password" id="lp-senha2" autocomplete="new-password" minlength="8" required></label>
+      <button class="btn" type="submit">Criar minha conta</button>
+      <div class="links"><button type="button" class="linkbtn" data-ir="entrar">Já tenho conta</button></div>
+    </form>
+
+    <form id="f-esqueci" hidden>
+      <h2>Esqueci minha senha</h2>
+      <p class="note" style="margin:0">Enviaremos um link para você criar uma nova senha.</p>
+      <label class="f">E-mail<input type="email" id="lr-email" autocomplete="email" required></label>
+      <button class="btn" type="submit">Enviar link</button>
+      <div class="links"><button type="button" class="linkbtn" data-ir="entrar">Voltar</button></div>
+    </form>
+
+    <form id="f-nova" hidden>
+      <h2>Criar nova senha</h2>
+      <label class="f">Nova senha (mínimo 8 caracteres)<input type="password" id="ln-senha" autocomplete="new-password" minlength="8" required></label>
+      <label class="f">Repita a nova senha<input type="password" id="ln-senha2" autocomplete="new-password" minlength="8" required></label>
+      <button class="btn" type="submit">Salvar nova senha</button>
+    </form>
+    <footer class="rodape login-rodape" data-rodape></footer>
+  </div>
+</main>
+
+<div id="app" hidden>
+<div class="wrap">
+  <header class="top">
+    <svg class="guia" id="guia" viewBox="0 0 640 64" aria-hidden="true"></svg>
+    <div class="ht">
+    <button type="button" class="hero" data-hero title="Toque para outra saudação"></button>
+    <div class="kicker-top">Umbanda · diário de desenvolvimento</div>
+    <h1>Diário da Gira</h1>
+    <p class="sub">Piloto da turma · registre o que sentiu, partilhe se quiser</p>
+    <div class="ident" id="ident" hidden></div>
+    </div>
+    <svg class="emblema emblema-svg" id="emblema" viewBox="0 0 120 120" aria-hidden="true"></svg>
+  </header>
+  <div class="faixa" data-faixa></div>
+
+  <nav class="tabs" role="tablist" aria-label="Seções">
+    <button role="tab" id="t-registrar" aria-selected="true" data-tab="registrar">Registrar</button>
+    <button role="tab" id="t-minhas" aria-selected="false" data-tab="minhas">Meus registros</button>
+    <button role="tab" id="t-mapa" aria-selected="false" data-tab="mapa">Meu mapa</button>
+    <button role="tab" id="t-roda" aria-selected="false" data-tab="roda">Roda</button>
+    <button role="tab" id="t-caderno" aria-selected="false" data-tab="caderno">Caderno</button>
+    <button role="tab" id="t-turmas" aria-selected="false" data-tab="turmas" hidden>Turmas</button>
+  </nav>
+
+  <div class="orn" id="orn"></div>
+  <div class="turmabar" id="turmabar" hidden></div>
+
+
+  <!-- REGISTRAR -->
+  <section id="p-registrar" role="tabpanel">
+    <h2>Como está seu desenvolvimento hoje?</h2>
+    <p class="lead">Registre o que sentiu na gira aberta, no curso de desenvolvimento ou no dia a dia, fora do terreiro. Fundamentos e detalhes rituais da casa ficam fora daqui.</p>
+    <form id="f">
+      <fieldset>
+        <legend>Que momento foi este?</legend>
+        <div class="chips" id="f-tipo">
+          <label class="chip"><input type="radio" name="tipo" id="tipo-gira" value="Gira aberta" checked>Gira aberta</label>
+          <label class="chip"><input type="radio" name="tipo" id="tipo-curso" value="Curso de desenvolvimento">Curso de desenvolvimento</label>
+          <label class="chip"><input type="radio" name="tipo" id="tipo-fora" value="Fora do terreiro">Fora do terreiro</label>
+        </div>
+      </fieldset>
+
+      <fieldset class="so-fora">
+        <legend>Onde aconteceu</legend>
+        <div class="chips" id="f-ctx"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Data</legend>
+        <input type="date" id="f-data" required>
+      </fieldset>
+
+      <fieldset>
+        <legend><span class="so-terreiro-i">Linha ou entidade que você sentiu</span><span class="so-fora-i">Linha ou entidade que você associa (se sentir)</span></legend>
+        <div class="chips" id="f-linhas"></div>
+        <input type="text" id="f-linha-outra" placeholder="Outra linha (opcional)">
+      </fieldset>
+
+      <fieldset>
+        <legend>Percepções</legend>
+        <p class="hint">O que chegou por outros sentidos: um cheiro, um som, algo que viu, um sonho, uma intuição.</p>
+        <div class="chips" id="f-perc"></div>
+        <textarea id="f-perc-txt" placeholder="Descreva o que percebeu (opcional)"></textarea>
+      </fieldset>
+
+      <fieldset>
+        <legend>No corpo</legend>
+        <div class="chips" id="f-sens"></div>
+        <input type="text" id="f-sens-outra" placeholder="Outra sensação (opcional)">
+      </fieldset>
+
+      <fieldset>
+        <legend>Intensidade da presença</legend>
+        <div class="scale" id="f-int"></div>
+      </fieldset>
+
+      <fieldset class="so-terreiro">
+        <legend>Quanto você conseguiu se entregar?</legend>
+        <div class="scale" id="f-ent"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Emoções</legend>
+        <div class="chips" id="f-emo"></div>
+      </fieldset>
+
+      <fieldset class="so-terreiro">
+        <legend>O que atrapalhou</legend>
+        <div class="chips" id="f-dif"></div>
+      </fieldset>
+
+      <fieldset class="tocante so-terreiro">
+        <legend><svg class="flame" viewBox="0 0 12 18" aria-hidden="true"><path d="M6 0C7 4 11 6 11 11a5 5 0 0 1-10 0C1 8 3 7 4 4c1 2 2 3 2 3S7 4 6 0Z" fill="var(--candle)"/></svg>O ponto mais tocante</legend>
+        <label class="field"><span>Ponto cantado que mais tocou você</span>
+          <input type="text" id="f-ponto" placeholder="Como a turma conhece o ponto">
+        </label>
+        <label class="field"><span>Momento mais tocante</span>
+          <textarea id="f-momento" placeholder="Um instante, uma frase, um gesto que ficou com você"></textarea>
+        </label>
+      </fieldset>
+
+      <fieldset class="riscado-in so-terreiro">
+        <legend>Ponto riscado</legend>
+        <p class="hint">Antes de fotografar, confira com o dirigente se o ponto riscado da casa pode ser registrado.</p>
+        <div class="up">
+          <label class="btn ghost"><input type="file" id="f-riscado" accept="image/*">Adicionar imagem</label>
+          <button type="button" class="btn ghost danger" id="f-riscado-rm" hidden>Tirar imagem</button>
+        </div>
+        <img class="riscado-prev" id="f-riscado-prev" alt="Prévia do ponto riscado" hidden>
+        <label class="field" style="display:flex;flex-direction:column;gap:4px"><span style="font-size:.92rem;font-weight:500">O que você sentiu ou intuiu sobre ele</span>
+          <textarea id="f-riscado-txt" placeholder="Uma sensação, uma imagem que veio, uma intuição"></textarea>
+        </label>
+        <label class="check"><input type="checkbox" id="f-riscado-roda"> <span>Mostrar a imagem na roda (se eu partilhar o registro)</span></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Relato livre</legend>
+        <textarea id="f-relato" placeholder="O que mais você quer lembrar de hoje?"></textarea>
+      </fieldset>
+
+      <p class="banner" id="sem-turma" hidden>Você ainda não está em nenhuma turma. O registro fica salvo no seu diário; a roda e o caderno se abrem quando o dirigente te colocar numa turma.</p>
+
+      <fieldset id="fs-partilha">
+        <legend>Partilhar na roda?</legend>
+        <div class="radios" id="f-partilha">
+          <label><input type="radio" name="partilha" value="nao" checked> <span>Não, fica só no meu diário</span></label>
+          <label><input type="radio" name="partilha" value="nome"> <span>Sim, com meu nome</span></label>
+          <label><input type="radio" name="partilha" value="anonimo"> <span>Sim, sem meu nome</span></label>
+        </div>
+      </fieldset>
+
+      <fieldset id="fs-caderno">
+        <legend>Pode entrar no caderno da turma?</legend>
+        <p class="hint">Entram só linhas, sensações, intensidade, dificuldades, o ponto e o momento tocante, sempre sem nome.</p>
+        <div class="radios">
+          <label><input type="radio" name="caderno" value="sim" checked> <span>Sim</span></label>
+          <label><input type="radio" name="caderno" value="nao"> <span>Não</span></label>
+        </div>
+      </fieldset>
+
+      <button class="btn" type="submit" id="f-salvar">Salvar registro</button>
+    </form>
+  </section>
+
+  <!-- MINHAS -->
+  <section id="p-minhas" role="tabpanel" hidden>
+    <h2>Meus registros</h2>
+    <p class="lead">Só você vê esta lista.</p>
+    <div id="minhas-resumo" class="banner" hidden></div>
+    <div class="list" id="minhas"></div>
+  </section>
+
+  <!-- MEU MAPA -->
+  <section id="p-mapa" role="tabpanel" hidden>
+    <div class="cad-head">
+      <div class="kicker">Relatório pessoal</div>
+      <h2>Diagnóstico da caminhada</h2>
+      <p class="sub" id="mapa-sub">Só você vê este diagnóstico.</p>
+    </div>
+    <div id="mapa"></div>
+  </section>
+
+  <!-- RODA -->
+  <section id="p-roda" role="tabpanel" hidden>
+    <h2>Roda de partilha</h2>
+    <p class="lead">Relatos que a turma escolheu partilhar. Aqui ninguém julga a experiência do outro.</p>
+    <div class="list" id="roda"></div>
+  </section>
+
+  <!-- CADERNO -->
+  <section id="p-caderno" role="tabpanel" hidden>
+    <div class="cad-head">
+      <div class="kicker">Material da turma · <span id="cad-head-turma"></span></div>
+      <h2>Caderno de Sensações</h2>
+      <p class="sub" id="cad-sub"></p>
+    </div>
+    <div id="cad-exemplo" class="banner" hidden>Prévia com dados de exemplo. Some assim que a turma registrar as primeiras giras com autorização para o caderno.</div>
+    <div id="cad"></div>
+  </section>
+
+  <!-- TURMAS (dirigente) -->
+  <section id="p-turmas" role="tabpanel" hidden>
+    <h2>Turmas e convites</h2>
+    <p class="lead">Convide as pessoas, crie turmas e coloque cada cursista na sua. Os diários continuam privados: nem a dirigente lê.</p>
+
+    <section class="cad">
+      <h3>Convidar alguém</h3>
+      <form class="form-convite" id="f-convite">
+        <input type="text" id="cv-nome" placeholder="Nome" maxlength="80" required>
+        <input type="email" id="cv-email" placeholder="E-mail" required>
+        <select id="cv-papel" aria-label="Perfil"><option value="cursista">Cursista</option><option value="dirigente">Dirigente</option></select>
+        <select id="cv-turma" aria-label="Turma"><option value="">Sem turma por enquanto</option></select>
+        <button class="btn full" type="submit">Criar convite</button>
+      </form>
+      <ul class="membros convites" id="convites"></ul>
+    </section>
+
+    <section class="cad">
+      <h3>Turmas</h3>
+      <form class="row" id="nova-turma">
+        <input type="text" id="nova-turma-nome" placeholder="Nome da nova turma" maxlength="80" required>
+        <button class="btn" type="submit" style="padding:10px 16px">Criar turma</button>
+      </form>
+      <div class="list" id="turmas"></div>
+    </section>
+
+    <section class="cad">
+      <h3>Pessoas com conta</h3>
+      <ul class="membros" id="pessoas"></ul>
+    </section>
+  </section>
+
+  <footer class="rodape" data-rodape></footer>
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+// ===== Configuração: cole aqui os dados do seu projeto Supabase =====
+const SUPABASE_URL="COLE_AQUI_A_PROJECT_URL";        // ex.: https://abcdefgh.supabase.co
+const SUPABASE_ANON_KEY="COLE_AQUI_A_ANON_PUBLIC_KEY"; // chave "anon public" (pode ficar no site)
+// =====================================================================
+const LINHAS=["Erês","Caboclos","Pretos-velhos","Exus","Pombagiras","Ciganos","Zé Pilintra","Orixás"];
+const SENS=["Arrepio","Calor","Frio","Peso nos ombros","Leveza","Tontura","Formigamento","Coração acelerado","Pressão na cabeça","Vontade de rir","Vontade de chorar","Sonolência","Postura mudando"];
+const EMO=["Alegria","Paz","Gratidão","Acolhimento","Saudade","Ansiedade","Medo","Vergonha"];
+const DIF=["Tensão no corpo","Cabeça cheia","Medo do julgamento","Cansaço","Desconforto físico","Distração","Nada atrapalhou"];
+const PERC=["Olfato","Audição","Visão","Sonhos","Intuição"];
+const CTX=["Em casa","Dormindo / ao acordar","Na rua","No trabalho","Na natureza","Em outro lugar"];
+const INT=["muito leve","leve","média","forte","muito forte"];
+const ENT=["travei","pouco","em parte","bem","por inteiro"];
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmtData=d=>{if(!d)return"";const[y,m,dd]=d.split("-");return`${dd}/${m}/${y}`};
+const mesAno=d=>{const m=["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];const[y,mm]=d.split("-");return`${m[+mm-1]}/${y.slice(2)}`};
+
+function chips(el,name,list){el.innerHTML=list.map((v,i)=>`<label class="chip"><input type="checkbox" name="${name}" id="${name}-${i}" value="${esc(v)}">${esc(v)}</label>`).join("")}
+function scale(el,name,labels){el.innerHTML=labels.map((l,i)=>`<label><input type="radio" name="${name}" id="${name}-${i+1}" value="${i+1}" ${i===2?"checked":""}><b>${i+1}</b>${esc(l)}</label>`).join("")}
+const COR={"Erês":"ere","Caboclos":"caboclo","Pretos-velhos":"pretovelho","Exus":"exu","Pombagiras":"pombagira","Ciganos":"cigano","Zé Pilintra":"malandro","Orixás":"orixa"};
+const ICON={
+ ere:'<circle cx="12" cy="9" r="6"/><path d="M12 9a1.6 1.6 0 1 1 1.6 1.6A3.2 3.2 0 1 1 15.2 7.4"/><path d="M12 15v7"/>',
+ caboclo:'<path d="M7 2.5Q19 12 7 21.5"/><path d="M7 2.5v19"/><path d="M2.5 12h18"/><path d="M17.5 9.5 20.5 12l-3 2.5"/><path d="M2.5 10l1.5 2-1.5 2"/>',
+ pretovelho:'<path d="M14 10h6v3a3 3 0 0 1-6 0z"/><path d="M14 11.5H6.5Q3 11.5 3 9"/><path d="M16 7.5q1.2-1.5 0-3M18.6 7.5q1.2-1.5 0-3"/>',
+ exu:'<path d="M12 2v20"/><path d="M5.5 4v4q0 3 6.5 3t6.5-3V4"/><path d="M4 6 5.5 3.5 7 6M10.5 4 12 1.5 13.5 4M17 6l1.5-2.5L20 6"/>',
+ pombagira:'<path d="M12 2v20"/><path d="M12 12.5C7 12.5 3.5 10 5 3.5"/><path d="M12 12.5c5 0 8.5-2.5 7-9"/><path d="M3.2 5.2 5 3.2l1.5 2.4M10.5 4 12 1.5 13.5 4M17.5 5.6 19 3.2l1.8 2"/>',
+ cigano:'<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="1.8"/><path d="M12 3.5v6.7M12 13.8v6.7M3.5 12h6.7M13.8 12h6.7M6 6l4.7 4.7M13.3 13.3 18 18M18 6l-4.7 4.7M10.7 13.3 6 18"/>',
+ orixa:'<circle cx="12" cy="9" r="6.5"/><circle cx="12" cy="9" r="3.5"/><path d="M12 15.5V22M9.5 22h5"/>',
+ malandro:'<path d="M2.5 15.5c3.5 2.2 15.5 2.2 19 0"/><path d="M6 15.2c0-5.2 2.2-8.7 6-8.7s6 3.5 6 8.7"/><path d="M6.4 12.3h11.2M6.2 13.9h11.6"/><path d="M10 6.9l2 1.7 2-1.7"/>',
+ espada:'<path d="M12 2l1.6 3v10.5h-3.2V5z"/><path d="M7.5 15.5h9"/><path d="M12 15.5v5"/><circle cx="12" cy="21.5" r="1"/>',
+ oxe:'<path d="M12 3v19"/><path d="M12 5C7 3 3.5 6 3.5 9.5S7 15 12 12.5"/><path d="M12 5c5-2 8.5 1 8.5 4.5S17 15 12 12.5"/>',
+ estrela:'<path d="M12 2.5 20 16.5H4z"/><path d="M12 21.5 4 7.5h16z"/>',
+ lua:'<path d="M19.5 14.5A8.2 8.2 0 1 1 9.5 4.5a6.6 6.6 0 0 0 10 10z"/><path d="M17 4v3M15.5 5.5h3"/>',
+ sol:'<circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/>',
+ folha:'<path d="M4.5 19.5C4.5 10 10 4.5 20 4c0 10-5.5 15.5-15.5 15.5z"/><path d="M4.5 19.5 14 10"/><path d="M11 13l3 .5M8.5 16.5l3 .3"/>',
+ chama:'<path d="M12 2c.8 4.2 6 6.6 6 12a6 6 0 0 1-12 0c0-3 2-4.6 3-7.4 1.2 1.6 1.7 2.6 1.7 2.6S11.4 5.3 12 2z"/><path d="M12 22v-3.5"/><path d="M9.5 17a2.5 2.5 0 0 0 5 0c0-1.6-1.4-2.4-2.5-4-1.1 1.6-2.5 2.4-2.5 4z"/>',
+ raio:'<path d="M13.5 2 5 13.5h6L10 22l9-12h-6.2z"/>',
+ coracao:'<path d="M12 20.5C4 15 3 10.5 3 8.5A4.5 4.5 0 0 1 12 7a4.5 4.5 0 0 1 9 1.5c0 2-1 6.5-9 12z"/>',
+ cruzeiro:'<path d="M12 2v20"/><path d="M7.5 6.5h9"/><path d="M9.5 11h5"/><path d="M8 22h8"/>',
+ ondas:'<path d="M2.5 8.5c2.4-3 4.8-3 7.2 0s4.8 3 7.2 0 3-2 4.6-1.4"/><path d="M2.5 15.5c2.4-3 4.8-3 7.2 0s4.8 3 7.2 0 3-2 4.6-1.4"/>',
+ calice:'<path d="M6.5 3h11c0 5.5-2.2 8.5-5.5 8.5S6.5 8.5 6.5 3z"/><path d="M12 11.5V20M8 21h8"/><path d="M7 6.5h10"/>',
+ chave:'<circle cx="7.5" cy="7.5" r="4"/><circle cx="7.5" cy="7.5" r="1"/><path d="M10.5 10.5 21 21M16 16l2.8-2.8M19 19l2-2"/>',
+ roda:'<circle cx="12" cy="12" r="9.5" stroke-dasharray="0.1 3.1"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/>',
+ estrela5:'<path d="m12 2.5 2.7 6.2 6.8.6-5.1 4.5 1.5 6.6L12 16.9l-5.9 3.5 1.5-6.6-5.1-4.5 6.8-.6z"/>',
+ trevo:'<circle cx="8.5" cy="8.5" r="3.5"/><circle cx="15.5" cy="8.5" r="3.5"/><circle cx="8.5" cy="15.2" r="3.5"/><circle cx="15.5" cy="15.2" r="3.5"/><path d="M12 12l6 9"/>',
+ lampiao:'<path d="M8.5 5h7M9.5 5l-2 4v8l2 3h5l2-3V9l-2-4"/><path d="M7.5 9h9M7.5 17h9"/><path d="M12 11.5c1 1.6 1.8 2.2 1.8 3.4a1.8 1.8 0 0 1-3.6 0c0-1.2.8-1.8 1.8-3.4z"/>'
+};
+const ic=k=>ICON[k]?`<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${ICON[k]}</svg>`:"";
+const icL=n=>COR[n]?ic(COR[n]):"";
+const corLinha=n=>COR[n]?`var(--l-${COR[n]})`:"var(--accent)";
+chips($("#f-linhas"),"linha",LINHAS);document.querySelectorAll("#f-linhas label").forEach((l,i)=>{l.style.setProperty("--c",corLinha(LINHAS[i]));l.insertAdjacentHTML("beforeend",icL(LINHAS[i]));l.appendChild(l.childNodes[1])});
+// emblema: roda de símbolos em volta da vela
+(()=>{const ks=["exu","caboclo","estrela","ere","pretovelho","malandro","lua","pombagira","oxe","orixa","folha","cigano"];let g="";
+  const EXTRA={estrela:"var(--candle)",lua:"var(--l-orixa)",folha:"var(--l-caboclo)",oxe:"var(--ink)"};
+  ks.forEach((k,i)=>{const a=-Math.PI/2+i*2*Math.PI/ks.length,x=60+46*Math.cos(a)-9,y=60+46*Math.sin(a)-9;
+    const c=Object.values(COR).includes(k)?`var(--l-${k})`:(EXTRA[k]||"var(--ink)");
+    g+=`<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(.75)" style="color:${c}" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${ICON[k]}</g>`});
+  g+=`<circle cx="60" cy="60" r="27" fill="none" stroke="var(--pemba)" stroke-width="1.4" stroke-dasharray="1 4.5" stroke-linecap="round"/>`;
+  g+=`<path d="M60 44c2.4 6 8 9 8 16a8 8 0 0 1-16 0c0-4.5 3-6 4.5-10.5 1.5 3 3 4.5 3 4.5S62 51 60 44z" fill="var(--candle)"/><rect x="55.5" y="66" width="9" height="12" rx="1.5" fill="var(--pemba)"/>`;
+  document.querySelectorAll(".emblema-svg").forEach(e=>e.innerHTML=g)})();
+
+// guia no topo: contas nas cores das linhas
+(()=>{const ks=Object.values(COR);let s="";const n=45,W=640;for(let i=0;i<n;i++){const x=10+i*(W-20)/(n-1),u=(x-W/2)/(W/2),y=10+38*(1-u*u);
+  const k=ks[Math.floor(i/3)%ks.length];s+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${i%3===1?6.2:5}" fill="var(--l-${k})"/>`}
+  s+=`<circle cx="320" cy="56" r="7" fill="var(--candle)"/>`;$("#guia").innerHTML=s})();
+// ===== Identidade 2: fundo de símbolos, saudações, ornamentos =====
+const COR_ICON={ere:"--l-ere",caboclo:"--l-caboclo",pretovelho:"--l-pretovelho",exu:"--l-exu",pombagira:"--l-pombagira",cigano:"--l-cigano",malandro:"--l-malandro",orixa:"--l-orixa"};
+const corIc=k=>COR_ICON[k]?`var(${COR_ICON[k]})`:({estrela:"var(--candle)",estrela5:"var(--candle)",sol:"var(--candle)",chama:"var(--candle)",lampiao:"var(--candle)",lua:"var(--l-orixa)",ondas:"var(--l-orixa)",roda:"var(--l-orixa)",folha:"var(--l-caboclo)",trevo:"var(--l-caboclo)",oxe:"var(--l-caboclo)",espada:"var(--l-exu)",raio:"var(--l-malandro)",coracao:"var(--l-pombagira)",calice:"var(--l-pombagira)",chave:"var(--l-exu)",cruzeiro:"var(--l-pretovelho)"}[k]||"var(--ink)");
+const icC=(k,extra="")=>ICON[k]?`<svg class="ic ${extra}" viewBox="0 0 24 24" aria-hidden="true" style="--c:${corIc(k)}">${ICON[k]}</svg>`:"";
+// saudações (palavra, o que significa, símbolo)
+const SAUD=[
+ {w:"Axé",m:"força vital que a gente partilha",k:"estrela"},
+ {w:"Saravá",m:"salve! que a força te acompanhe",k:"folha"},
+ {w:"Laroyê",m:"salve Exu, o mensageiro",k:"exu"},
+ {w:"Adorei as almas",m:"saudação aos Pretos-velhos",k:"pretovelho"},
+ {w:"Okê arô",m:"salve Oxóssi, o caçador",k:"caboclo"},
+ {w:"Epa Babá",m:"salve Oxalá",k:"sol"},
+ {w:"Dois-dois",m:"salve a Ibejada, as crianças",k:"ere"}
+];
+let saudI=Math.floor(Date.now()/864e5)%SAUD.length;
+function pintaHero(){const s=SAUD[saudI];document.querySelectorAll("[data-hero]").forEach(h=>{h.style.setProperty("--c",corIc(s.k));
+  h.innerHTML=`${icC(s.k)}<span><span class="w">${esc(s.w)}!</span><small>${esc(s.m)}</small></span>`})}
+document.querySelectorAll("[data-hero]").forEach(h=>h.onclick=()=>{saudI=(saudI+1)%SAUD.length;pintaHero()});pintaHero();
+document.querySelectorAll("[data-faixa]").forEach(f=>{f.innerHTML=SAUD.map(s=>`<span class="w" style="--c:${corIc(s.k)}">${icC(s.k)}${esc(s.w)}</span>`).join("")});
+// rodapé: roda de símbolos + bênção
+document.querySelectorAll("[data-rodape]").forEach(f=>{
+  f.innerHTML=`<svg class="emblema emblema-svg" viewBox="0 0 120 120" aria-hidden="true"></svg>
+    <div class="w">Axé, saravá e boa caminhada.</div>
+    <div class="linha-ic">${["estrela","folha","chama","lua","cruzeiro","coracao","sol"].map(k=>icC(k)).join("")}</div>`;
+  f.querySelector(".emblema-svg").innerHTML=document.querySelector("#emblema").innerHTML});
+// fundo: símbolos espalhados, sempre na mesma disposição
+(()=>{const ks=["estrela","folha","chama","lua","cruzeiro","coracao","sol","exu","caboclo","ere","oxe","calice","pretovelho","trevo","raio","ondas","pombagira","cigano","chave","orixa","lampiao","roda","malandro","estrela5"];
+  let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+  const T=560,N=5,C=T/N;let g="";
+  for(let i=0;i<N*N;i++){const k=ks[i%ks.length],cx=(i%N)*C,cy=Math.floor(i/N)*C,s=1.5+rnd()*.8,sz=24*s,
+    x=cx+8+rnd()*(C-sz-16),y=cy+8+rnd()*(C-sz-16),r=Math.round((rnd()-.5)*50);
+    g+=`<g transform="translate(${x.toFixed(0)} ${y.toFixed(0)}) rotate(${r} ${(12*s).toFixed(0)} ${(12*s).toFixed(0)}) scale(${s.toFixed(2)})" style="color:${corIc(k)}" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${ICON[k]}</g>`}
+  $("#fundo").innerHTML=`<defs><pattern id="pf" width="${T}" height="${T}" patternUnits="userSpaceOnUse">${g}</pattern></defs><rect width="100%" height="100%" fill="url(#pf)"/>`})();
+// cabeçalho de cada aba + ícones nas abas
+const ABA={registrar:{w:"Saravá",k:"folha",ic:"chama"},minhas:{w:"Axé",k:"estrela",ic:"cruzeiro"},mapa:{w:"Adorei as almas",k:"pretovelho",ic:"estrela5"},roda:{w:"Salve a turma",k:"roda",ic:"roda"},caderno:{w:"Axé, minha gente",k:"lua",ic:"lua"},turmas:{w:"Laroyê",k:"chave",ic:"chave"}};
+document.querySelectorAll("nav.tabs button").forEach(b=>{const a=ABA[b.dataset.tab];if(a)b.insertAdjacentHTML("afterbegin",icC(a.ic))});
+function pintaOrn(t){const a=ABA[t]||ABA.registrar;const o=$("#orn");o.innerHTML=`<span class="w" style="--c:${corIc(a.k)}">${icC(a.k)}${esc(a.w)}</span>`}
+// ponto riscado: imagem reduzida e guardada junto do registro
+let riscadoImg=null;const IMG_OK=/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/;
+function limparRiscado(){riscadoImg=null;$("#f-riscado").value="";$("#f-riscado-prev").hidden=true;$("#f-riscado-rm").hidden=true}
+$("#f-riscado-rm").onclick=limparRiscado;
+$("#f-riscado").onchange=async ev=>{const f=ev.target.files[0];if(!f)return;
+  try{const url=URL.createObjectURL(f);const im=new Image();await new Promise((ok,no)=>{im.onload=ok;im.onerror=no;im.src=url});
+    let max=1100,q=.78,out="";
+    for(let t=0;t<6;t++){const sc=Math.min(1,max/Math.max(im.width,im.height));const c=document.createElement("canvas");c.width=Math.round(im.width*sc);c.height=Math.round(im.height*sc);
+      const g=c.getContext("2d");g.fillStyle="#fff";g.fillRect(0,0,c.width,c.height);g.drawImage(im,0,0,c.width,c.height);out=c.toDataURL("image/jpeg",q);
+      if(out.length<180000)break;max*=.8;q=Math.max(.5,q-.08)}
+    URL.revokeObjectURL(url);
+    if(out.length>=180000){toast("A imagem ficou grande demais. Tente uma foto menor.");return}
+    riscadoImg=out;$("#f-riscado-prev").src=out;$("#f-riscado-prev").hidden=false;$("#f-riscado-rm").hidden=false;
+  }catch(e){toast("Não consegui abrir essa imagem. Tente outra.")}};chips($("#f-sens"),"sens",SENS);chips($("#f-emo"),"emo",EMO);chips($("#f-perc"),"perc",PERC);chips($("#f-ctx"),"ctx",CTX);
+const syncTipo=()=>{const t=(document.querySelector("input[name=tipo]:checked")||{}).value;$("#f").dataset.tipo=t==="Fora do terreiro"?"fora":"terreiro"};
+document.querySelectorAll("input[name=tipo]").forEach(i=>i.addEventListener("change",syncTipo));syncTipo();chips($("#f-dif"),"dif",DIF);
+scale($("#f-int"),"int",INT);scale($("#f-ent"),"ent",ENT);
+$("#f-data").value=new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
+
+// abas
+const TABS=["registrar","minhas","mapa","roda","caderno","turmas"];
+function show(t){if($("#t-"+t).hidden)t="registrar";TABS.forEach(x=>{$("#p-"+x).hidden=x!==t;$("#t-"+x).setAttribute("aria-selected",x===t)});pintaOrn(t);$("#turmabar").hidden=!["registrar","roda","caderno"].includes(t)||!S.turmasVis().length;try{localStorage.setItem("dg-tab",t)}catch(e){}}
+document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>show(b.dataset.tab));
+function toast(msg){const t=document.createElement("div");t.className="toast";t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
+
+// estado
+const S={sb:null,uid:null,perfil:null,minhas:[],roda:[],caderno:[],admin:false,
+  turmas:[],pessoas:[],convites:[],perfisMap:{},turmaSel:null};
+S.meuId=()=>S.uid;
+S.turmasVis=()=>S.admin?S.turmas:S.turmas.filter(t=>(t.membros||[]).includes(S.meuId()));
+let seq=0;const lid=()=>"l"+(++seq)+Date.now();
+
+const h=location.hash.slice(1);let saved=null;try{saved=localStorage.getItem("dg-tab")}catch(e){}
+show(TABS.includes(h)?h:(TABS.includes(saved)?saved:"registrar"));
+
+async function nomes(ids){
+  const out={};[...new Set(ids.filter(Boolean))].forEach(i=>{const p=S.perfisMap[i];out[i]={name:p?p.nome:"",avatarUrl:""}});return out;
+}
+
+function aplicarPerfil(){
+  $("#t-turmas").hidden=!S.admin;
+  const vis=S.turmasVis();
+  if(!vis.find(t=>t.id===S.turmaSel)){S.turmaSel=vis[0]?vis[0].id:null}
+  const bar=$("#turmabar");
+  if(vis.length>1){bar.innerHTML=`<span>Turma</span><select id="turma-sel" aria-label="Escolher turma">${vis.map(t=>`<option value="${esc(t.id)}" ${t.id===S.turmaSel?"selected":""}>${esc(t.nome)}</option>`).join("")}</select>`;
+    $("#turma-sel").onchange=ev=>{S.turmaSel=ev.target.value;renderRoda();renderCaderno()}}
+  else if(vis.length===1){bar.innerHTML=`<span>Turma</span><b></b>`;bar.querySelector("b").textContent=vis[0].nome}
+  const semTurma=!S.turmaSel;
+  $("#sem-turma").hidden=!semTurma;$("#fs-partilha").hidden=semTurma;$("#fs-caderno").hidden=semTurma;
+  const cur=TABS.find(x=>!$("#p-"+x).hidden)||"registrar";show(cur);
+  renderRoda();renderCaderno();renderTurmas();
+}
+
+async function renderTurmas(){
+  if(!S.admin)return;
+  const nome=id=>id===S.uid?"Você":((S.perfisMap[id]&&S.perfisMap[id].nome)||"Sem nome");
+  // turmas no convite
+  const sel=$("#cv-turma"),v=sel.value;sel.innerHTML=`<option value="">Sem turma por enquanto</option>`+S.turmas.map(t=>`<option value="${esc(t.id)}">${esc(t.nome)}</option>`).join("");sel.value=v;
+  // convites pendentes
+  const pend=S.convites.filter(c=>!c.usado_em);const cl=$("#convites");
+  cl.innerHTML=pend.length?pend.map(c=>{const t=S.turmas.find(x=>x.id===c.turma_id);
+    return`<li data-email="${esc(c.email)}"><span class="p"><span><b>${esc(c.nome||c.email)}</b> · ${esc(c.email)}<br><span class="note">${c.papel==="dirigente"?"Dirigente":"Cursista"}${t?" · "+esc(t.nome):""} · aguardando primeiro acesso</span></span></span>
+      <span class="mine-actions"><button class="btn ghost" data-copy>Copiar convite</button><button class="x" data-cancel>Cancelar</button></span></li>`}).join("")
+    :`<li><span class="note">Nenhum convite pendente.</span></li>`;
+  cl.querySelectorAll("li[data-email]").forEach(li=>{const c=pend.find(x=>x.email===li.dataset.email);
+    li.querySelector("[data-copy]").onclick=async()=>{const txt=`Olá, ${c.nome||""}! Você foi convidada(o) para o Diário da Gira. Acesse ${location.origin}${location.pathname}, toque em "Primeiro acesso" e crie sua senha usando este e-mail: ${c.email}`;
+      try{await navigator.clipboard.writeText(txt);toast("Convite copiado. Agora é só enviar.")}catch(e){prompt("Copie o convite:",txt)}};
+    li.querySelector("[data-cancel]").onclick=async()=>{const{error}=await S.sb.from("convites").delete().eq("email",c.email);if(error)toast("Não foi possível cancelar.");else{toast("Convite cancelado");carregar()}}});
+  // turmas
+  const el=$("#turmas");
+  if(!S.turmas.length)el.innerHTML=`<div class="empty"><b>Nenhuma turma ainda</b>Dê um nome acima e crie a primeira. Depois é só adicionar as pessoas.</div>`;
+  else el.innerHTML=S.turmas.map(t=>{const m=t.membros||[];const livres=S.pessoas.map(p=>p.id).filter(id=>!m.includes(id));
+    return`<article class="card" data-t="${esc(t.id)}">
+      <div class="meta"><h3>${esc(t.nome)}</h3><span>${m.length} ${m.length===1?"pessoa":"pessoas"}</span></div>
+      ${m.length?`<ul class="membros">${m.map(id=>`<li><span class="p"><span>${esc(nome(id))}</span></span><button class="x" data-rm="${esc(id)}" aria-label="Tirar da turma">Tirar</button></li>`).join("")}</ul>`:`<p class="note" style="margin:0">Ninguém nesta turma ainda.</p>`}
+      ${livres.length?`<div class="row"><select aria-label="Escolher pessoa" id="add-${esc(t.id)}">${livres.map(id=>`<option value="${esc(id)}">${esc(nome(id))}</option>`).join("")}</select><button class="btn ghost" data-add>Adicionar</button></div>`:`<p class="note" style="margin:0">Todas as pessoas com conta estão nesta turma.</p>`}
+      <div class="mine-actions"><button class="btn ghost danger" data-del>Apagar turma</button></div>
+    </article>`}).join("");
+  el.querySelectorAll("[data-t]").forEach(card=>{
+    const id=card.dataset.t,t=S.turmas.find(x=>x.id===id);
+    card.querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>membro(t.id,b.dataset.rm,false));
+    const add=card.querySelector("[data-add]");if(add)add.onclick=()=>{const v=card.querySelector("select").value;if(v)membro(t.id,v,true)};
+    card.querySelector("[data-del]").onclick=ev=>{const box=ev.target.parentElement;
+      box.innerHTML=`<span class="note">Apagar a turma ${esc(t.nome)}? A roda e o caderno dela também serão apagados.</span><button class="btn ghost danger" data-y>Sim, apagar</button><button class="btn ghost" data-n>Cancelar</button>`;
+      box.querySelector("[data-y]").onclick=()=>apagarTurma(t);box.querySelector("[data-n]").onclick=renderTurmas};
+  });
+  // pessoas
+  const pl=$("#pessoas");
+  pl.innerHTML=S.pessoas.length?S.pessoas.map(p=>{const ts=S.turmas.filter(t=>(t.membros||[]).includes(p.id)).map(t=>t.nome);
+    return`<li data-p="${esc(p.id)}"><span class="p"><span><b>${esc(nome(p.id))}</b> <span class="role${p.papel==="dirigente"?" adm":""}">${p.papel==="dirigente"?"Dirigente":"Cursista"}</span><br><span class="note">${ts.length?esc(ts.join(", ")):"sem turma"}</span></span></span>
+      ${p.id!==S.uid?`<button class="btn ghost" data-papel="${p.papel==="dirigente"?"cursista":"dirigente"}">${p.papel==="dirigente"?"Tornar cursista":"Tornar dirigente"}</button>`:""}</li>`}).join("")
+    :`<li><span class="note">Ninguém criou conta ainda.</span></li>`;
+  pl.querySelectorAll("[data-papel]").forEach(b=>b.onclick=async()=>{const id=b.closest("li").dataset.p;
+    const{error}=await S.sb.rpc("definir_papel",{alvo:id,novo:b.dataset.papel});if(error)toast(error.message);else{toast("Perfil atualizado");carregar()}});
+}
+async function membro(turma,user,entrar){
+  const q=entrar?S.sb.from("membros").insert({turma_id:turma,user_id:user}):S.sb.from("membros").delete().eq("turma_id",turma).eq("user_id",user);
+  const{error}=await q;if(error)toast("Não foi possível salvar a turma.");else carregar();
+}
+async function apagarTurma(t){
+  const{error}=await S.sb.from("turmas").delete().eq("id",t.id);if(error)toast("Não foi possível apagar a turma.");else{toast("Turma apagada");carregar()}
+}
+$("#nova-turma").addEventListener("submit",async ev=>{ev.preventDefault();const inp=$("#nova-turma-nome");const nome=inp.value.trim();if(!nome)return;
+  const{error}=await S.sb.from("turmas").insert({nome});if(error)toast("Não foi possível criar a turma.");else{inp.value="";toast("Turma criada");carregar()}});
+$("#f-convite").addEventListener("submit",async ev=>{ev.preventDefault();
+  const email=$("#cv-email").value.trim().toLowerCase(),nome=$("#cv-nome").value.trim();
+  const{error}=await S.sb.from("convites").upsert({email,nome,papel:$("#cv-papel").value,turma_id:$("#cv-turma").value||null,criado_por:S.uid,usado_em:null});
+  if(error){toast("Não foi possível criar o convite.");return}
+  if(S.pessoas.some(p=>p.email===email))toast("Essa pessoa já tem conta. Use a lista de pessoas abaixo.");else toast("Convite criado. Toque em Copiar convite para enviar.");
+  ev.target.reset();carregar()});
+
+function lerForm(){
+  const val=n=>[...document.querySelectorAll(`input[name=${n}]:checked`)].map(i=>i.value);
+  const linhas=val("linha");const lo=$("#f-linha-outra").value.trim();if(lo)linhas.push(lo);
+  const sens=val("sens");const so=$("#f-sens-outra").value.trim();if(so)sens.push(so);
+  const tipo=val("tipo")[0]||"Gira aberta",fora=tipo==="Fora do terreiro";
+  return{tipo,contexto:fora?val("ctx"):[],percepcoes:val("perc"),percepcaoTexto:$("#f-perc-txt").value.trim(),data:$("#f-data").value,linhas,sensacoes:sens,intensidade:+val("int")[0]||3,entrega:fora?null:(+val("ent")[0]||3),
+    emocoes:val("emo"),dificuldades:fora?[]:val("dif"),ponto:fora?"":$("#f-ponto").value.trim(),momento:fora?"":$("#f-momento").value.trim(),
+    riscadoImg:fora?null:riscadoImg,riscadoTexto:$("#f-riscado-txt").value.trim(),riscadoNaRoda:$("#f-riscado-roda").checked,
+    relato:$("#f-relato").value.trim(),partilha:val("partilha")[0]||"nao",caderno:val("caderno")[0]||"sim",criadoEm:Date.now()};
+}
+
+$("#f").addEventListener("submit",async ev=>{
+  ev.preventDefault();
+  const e=lerForm();
+  if(!e.linhas.length&&!e.sensacoes.length&&!e.relato&&!e.momento&&!e.riscadoImg&&!e.riscadoTexto&&!e.percepcoes.length&&!e.percepcaoTexto){toast("Marque pelo menos uma linha, sensação ou escreva algo.");return}
+  const btn=$("#f-salvar");btn.disabled=true;btn.textContent="Salvando…";
+  try{
+    if(!S.turmaSel){e.partilha="nao";e.caderno="nao"}
+    const comum={turmaId:S.turmaSel,tipo:e.tipo,contexto:e.contexto,percepcoes:e.percepcoes,percepcaoTexto:e.percepcaoTexto,data:e.data,linhas:e.linhas,sensacoes:e.sensacoes,intensidade:e.intensidade,ponto:e.ponto,momento:e.momento,criadoEm:e.criadoEm};
+    const{data:reg,error}=await S.sb.from("registros").insert({user_id:S.uid,dados:e}).select("id").single();
+    if(error)throw error;
+    if(e.partilha!=="nao"){const r=await S.sb.from("roda").insert({turma_id:S.turmaSel,registro_id:reg.id,autor_id:e.partilha==="nome"?S.uid:null,
+      dados:{relato:e.relato,riscadoTexto:e.riscadoTexto,riscadoImg:e.riscadoNaRoda?e.riscadoImg:null,...comum}});if(r.error)toast("O registro foi salvo, mas não entrou na roda.")}
+    if(e.caderno==="sim"){const c=await S.sb.from("caderno").insert({turma_id:S.turmaSel,registro_id:reg.id,dados:{...comum,dificuldades:e.dificuldades}});if(c.error)toast("O registro foi salvo, mas não entrou no caderno.")}
+    await carregar();
+    $("#f").reset();limparRiscado();syncTipo();scale($("#f-int"),"int",INT);scale($("#f-ent"),"ent",ENT);aplicarPerfil();
+    $("#f-data").value=e.data;
+    toast(e.partilha!=="nao"?"Axé! Registro salvo e partilhado na roda":"Axé! Registro salvo no seu diário");
+    show(e.partilha!=="nao"?"roda":"minhas");window.scrollTo({top:0});
+  }catch(err){toast("Não foi possível salvar. Confira sua conexão e tente de novo.")}
+  finally{btn.disabled=false;btn.textContent="Salvar registro"}
+});
+
+async function apagar(id){
+  // apagar o registro apaga também a partilha na roda e no caderno
+  const{error}=await S.sb.from("registros").delete().eq("id",id);
+  if(error)toast("Não foi possível apagar. Tente de novo.");else{toast("Registro apagado");carregar()}
+}
+
+// render
+const dots=n=>"●".repeat(n)+"○".repeat(5-n);
+function tags(arr,cls=""){return arr&&arr.length?`<div class="tags">${arr.map(t=>`<span class="tag ${cls}">${esc(t)}</span>`).join("")}</div>`:""}
+function tagsL(arr){return arr&&arr.length?`<div class="tags">${arr.map(t=>`<span class="tag l" style="--c:${corLinha(t)}">${icL(t)}${esc(t)}</span>`).join("")}</div>`:""}
+const corCard=e=>e.linhas&&e.linhas.length?` style="--c:${corLinha(e.linhas[0])}"`:"";
+function riscado(e){
+  const img=e.riscadoImg&&IMG_OK.test(e.riscadoImg)?`<img src="${e.riscadoImg}" alt="Ponto riscado">`:"";
+  if(!img&&!e.riscadoTexto)return"";
+  return`<figure class="riscado"><small>Ponto riscado</small>${img}${e.riscadoTexto?`<figcaption>${esc(e.riscadoTexto)}</figcaption>`:""}</figure>`;
+}
+function moment(e){
+  let h="";
+  if((e.percepcoes&&e.percepcoes.length)||e.percepcaoTexto)h+=`<div class="moment"><small>Percepções${e.contexto&&e.contexto.length?" · "+esc(e.contexto.join(", ")):""}</small>${e.percepcoes&&e.percepcoes.length?`<p>${esc(e.percepcoes.join(", "))}</p>`:""}${e.percepcaoTexto?`<p>${esc(e.percepcaoTexto)}</p>`:""}</div>`;
+  if(e.ponto)h+=`<div class="moment"><small>Ponto que tocou</small><p>${esc(e.ponto)}</p></div>`;
+  if(e.momento)h+=`<div class="moment"><small>Momento mais tocante</small><p>${esc(e.momento)}</p></div>`;
+  return h;
+}
+
+function renderMinhas(){
+  const el=$("#minhas");
+  if(!S.minhas.length){el.innerHTML=`<div class="empty"><b>Nenhum registro ainda</b>Depois da próxima gira ou aula do curso, use a aba Registrar. Seus registros aparecem aqui, em ordem de data.</div>`;$("#minhas-resumo").hidden=true;return}
+  const n=S.minhas.length,mi=(S.minhas.reduce((a,b)=>a+b.intensidade,0)/n).toFixed(1),LTm=S.minhas.filter(x=>x.entrega),me=LTm.length?(LTm.reduce((a,b)=>a+b.entrega,0)/LTm.length).toFixed(1):"-";
+  const r=$("#minhas-resumo");r.hidden=false;r.textContent=`${n} ${n>1?"giras registradas":"gira registrada"} · intensidade média ${mi} · entrega média ${me}`;
+  el.innerHTML=[...S.minhas].sort((a,b)=>(b.data||"").localeCompare(a.data||"")||b.criadoEm-a.criadoEm).map(e=>`
+    <article class="card"${corCard(e)}>
+      <div class="meta"><span class="who">${fmtData(e.data)}</span>${e.tipo?`<span class="tipo">${esc(e.tipo)}</span>`:""}
+        <span>presença <span class="dots" aria-label="${e.intensidade} de 5">${dots(e.intensidade)}</span></span>
+        ${e.entrega?`<span>entrega <span class="dots" aria-label="${e.entrega} de 5">${dots(e.entrega)}</span></span>`:""}</div>
+      ${tagsL(e.linhas)}${tags(e.sensacoes,"s")}${tags(e.emocoes,"s")}
+      ${e.dificuldades&&e.dificuldades.length?`<p class="note">Atrapalhou: ${esc(e.dificuldades.join(", "))}</p>`:""}
+      ${moment(e)}${riscado(e)}
+      ${e.relato?`<p class="relato">${esc(e.relato)}</p>`:""}
+      <div class="meta"><span>${e.partilha==="nao"?"Só no diário":e.partilha==="nome"?"Partilhado com nome":"Partilhado sem nome"}</span><span>${e.caderno==="sim"?"No caderno":"Fora do caderno"}</span></div>
+      <div class="mine-actions" data-id="${esc(e.id)}"><button class="btn ghost danger" data-act="del">Apagar</button></div>
+    </article>`).join("");
+  el.querySelectorAll("[data-act=del]").forEach(b=>{
+    b.onclick=()=>{const box=b.parentElement;
+      box.innerHTML=`<span class="note">Apagar também da roda e do caderno?</span><button class="btn ghost danger" data-y>Sim, apagar</button><button class="btn ghost" data-n>Cancelar</button>`;
+      box.querySelector("[data-y]").onclick=()=>apagar(box.dataset.id);
+      box.querySelector("[data-n]").onclick=renderMinhas;}
+  });
+}
+
+async function renderRoda(){
+  const el=$("#roda");
+  if(!S.turmaSel){el.innerHTML=`<div class="empty"><b>Você ainda não está numa turma</b>${S.admin?"Crie uma turma na aba Turmas para abrir a roda.":"A roda aparece assim que o dirigente te colocar numa turma."}</div>`;return}
+  const R=S.roda.filter(r=>r.turmaId===S.turmaSel);
+  if(!R.length){el.innerHTML=`<div class="empty"><b>A roda desta turma ainda está vazia</b>Quando alguém marcar “Partilhar na roda” ao salvar um registro, o relato aparece aqui para a turma acolher.</div>`;return}
+  el.innerHTML=R.map(r=>{
+    let who="Alguém da turma",av="";
+    if(r.autor&&r.autor===S.uid)who="Você";
+    else if(r.autor&&S.perfisMap[r.autor])who=S.perfisMap[r.autor].nome||"Alguém da turma";
+    return`<article class="card" data-id="${esc(r.id)}"${corCard(r)}>
+      <div class="meta">${av?`<img src="${esc(av)}" alt="">`:""}<span class="who">${esc(who)}</span><span>${fmtData(r.data)}</span>${r.tipo?`<span class="tipo">${esc(r.tipo)}</span>`:""}
+        <span class="dots" aria-label="presença ${r.intensidade} de 5">${dots(r.intensidade)}</span></div>
+      ${tagsL(r.linhas)}${tags(r.sensacoes,"s")}
+      ${moment(r)}${riscado(r)}
+      ${r.relato?`<p class="relato">${esc(r.relato)}</p>`:""}
+      <div class="acolhe"><div class="cs"></div>
+        <button class="btn ghost" data-open>Acolher este relato</button></div>
+    </article>`}).join("");
+  el.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>abrirAcolhe(b.closest(".card")));
+}
+
+async function carregarComentarios(card){
+  const id=card.dataset.id,box=card.querySelector(".cs");
+  const{data}=await S.sb.from("acolhimentos").select("autor_id,texto,criado_em").eq("roda_id",id).order("criado_em");
+  box.innerHTML="";
+  (data||[]).forEach(c=>{const p=document.createElement("div");p.className="c";const b=document.createElement("b");
+    b.textContent=c.autor_id===S.uid?"Você":((S.perfisMap[c.autor_id]&&S.perfisMap[c.autor_id].nome)||"Alguém da turma");
+    p.append(b,": "+c.texto);box.appendChild(p)});
+}
+async function abrirAcolhe(card){
+  const btn=card.querySelector("[data-open]");const id=card.dataset.id;
+  await carregarComentarios(card);
+  const row=document.createElement("form");row.className="row";
+  row.innerHTML=`<input type="text" id="ac-${esc(id)}" placeholder="Uma palavra de acolhimento" maxlength="300"><button class="btn ghost" type="submit">Enviar</button>`;
+  btn.replaceWith(row);row.querySelector("input").focus();
+  row.onsubmit=async ev=>{ev.preventDefault();const inp=row.querySelector("input");const t=inp.value.trim();if(!t)return;
+    const{error}=await S.sb.from("acolhimentos").insert({roda_id:id,texto:t});
+    if(error)toast("Não foi possível enviar.");else{inp.value="";await carregarComentarios(card);toast("Acolhimento enviado")}};
+}
+
+const EXEMPLO=[
+ {data:"2026-08-10",linhas:["Caboclos"],sensacoes:["Calor","Postura mudando","Arrepio"],intensidade:4,ponto:"Ponto de abertura da gira",momento:"Quando o atabaque mudou de toque e o corpo inteiro respondeu."},
+ {data:"2026-08-24",linhas:["Pretos-velhos"],sensacoes:["Peso nos ombros","Leveza","Vontade de chorar"],intensidade:4,ponto:"Ponto de chamada dos pretos-velhos",momento:"Um silêncio de paz depois da defumação."},
+ {data:"2026-09-27",linhas:["Erês"],sensacoes:["Vontade de rir","Leveza","Formigamento"],intensidade:2,ponto:"Ponto das crianças",momento:"Senti a chegada, mesmo sem mergulhar."},
+ {data:"2026-09-27",linhas:["Erês"],sensacoes:["Vontade de rir","Calor"],intensidade:3,ponto:"Ponto das crianças",momento:"A gargalhada da turma toda ao mesmo tempo."},
+ {data:"2026-10-05",linhas:["Caboclos","Exus"],sensacoes:["Arrepio","Calor"],intensidade:3,ponto:"Ponto de abertura da gira",momento:""}
+];
+
+[["Tensão no corpo"],["Cabeça cheia"],["Tensão no corpo","Medo do julgamento"],["Cabeça cheia","Tensão no corpo"],["Cansaço"]].forEach((d,i)=>EXEMPLO[i].dificuldades=d);
+
+function topo(map,excl=[]){const a=Object.entries(map).filter(([k])=>!excl.includes(k)).sort((x,y)=>y[1]-x[1]);return a.length?a[0]:null}
+const media=(arr,k)=>arr.length?arr.reduce((s,e)=>s+(+e[k]||3),0)/arr.length:0;
+const vezes=n=>`${n} ${n>1?"registros":"registro"}`;
+const num=v=>(+v).toFixed(1).replace(".",",");
+const FX_P=["muito leve","leve","média","forte","muito forte"],FX_E=["muito baixa","baixa","média","alta","muito alta"];
+const faixa=(v,F)=>F[v<1.75?0:v<2.5?1:v<3.5?2:v<4.25?3:4];
+const fx=(v,F)=>`${faixa(v,F)} (${num(v)})`;
+const TERMOS={
+  intensidade:{titulo:"Termômetro da presença",nome:"presença",F:FX_P,grupos:["leve (1–2)","média (3)","forte (4–5)"],zonas:["zona leve","zona média","zona forte","zona muito forte"]},
+  entrega:{titulo:"Termômetro da entrega",nome:"entrega",F:FX_E,grupos:["travada (1–2)","parcial (3)","plena (4–5)"],zonas:["zona de bloqueio","zona em construção","zona de entrega","zona de entrega plena"]}
+};
+function termo(L,k){const T=TERMOS[k],v=L.map(e=>+e[k]||3),n=v.length;
+  const b=v.filter(x=>x<=2).length,m=v.filter(x=>x===3).length,a=v.filter(x=>x>=4).length;
+  const pct=x=>Math.round(x/n*100),ind=Math.round((a-b)/n*100),med=v.reduce((s,x)=>s+x,0)/n;
+  return{...T,k,med,pb:pct(b),pm:pct(m),pa:pct(a),ind,zona:T.zonas[ind<0?0:ind<50?1:ind<75?2:3]}}
+const EXP={intensidade:["você sentiu a presença de forma leve","você sentiu a presença de forma média","você sentiu a presença de forma forte"],
+  entrega:["a entrega ainda ficou mais travada, o que faz parte do caminho","você conseguiu se entregar em parte","você conseguiu se entregar plenamente"]};
+function experiencia(t){const ps=[t.pb,t.pm,t.pa];let i=2;if(t.pm>ps[i])i=1;if(t.pb>ps[i])i=0;const p=ps[i];const u=t.k==="entrega"?"sessões":"registros";
+  const ab=p===100?`Em todos os ${u}`.replace("todos os sessões","todas as sessões"):p>50?`Na maior parte dos ${u} (${p}%)`.replace("dos sessões","das sessões"):`Em ${p}% dos ${u}`.replace("dos sessões","das sessões");return`${ab}, ${EXP[t.k][i]}.`}
+
+let MAPA=null;
+const lista=a=>a.length<2?(a[0]||""):a.slice(0,-1).join(", ")+" e "+a[a.length-1];
+const low=x=>String(x).toLowerCase();
+const dias=(a,b)=>(new Date(b)-new Date(a))/864e5;
+function renderMapa(){
+  const el=$("#mapa");const L=[...S.minhas].sort((a,b)=>(a.data||"").localeCompare(b.data||""));
+  if(!L.length){el.innerHTML=`<div class="empty"><b>Seu diagnóstico aparece depois do primeiro registro</b>Com o tempo, ele conta em texto como tem sido a sua caminhada, dentro e fora do terreiro: as linhas que mais se aproximam, o que o corpo e os sentidos percebem, o que tem atrapalhado e como a sua entrega vem mudando.</div>`;$("#mapa-sub").textContent="Só você vê este diagnóstico.";MAPA=null;return}
+  const ehFora=e=>e.tipo==="Fora do terreiro";
+  const LT=L.filter(e=>!ehFora(e)),LF=L.filter(ehFora);
+  const n=L.length,ini=fmtData(L[0].data),fim=fmtData(L[n-1].data),periodo=ini===fim?`em ${ini}`:`entre ${ini} e ${fim}`;
+  const nG=LT.filter(e=>(e.tipo||"Gira aberta")==="Gira aberta").length,nC=LT.length-nG,nF=LF.length;
+  const tiposTxt=lista([nG?`${nG} ${nG>1?"giras abertas":"gira aberta"}`:"",nC?`${nC} ${nC>1?"aulas do curso":"aula do curso"}`:"",nF?`${nF} ${nF>1?"experiências fora do terreiro":"experiência fora do terreiro"}`:""].filter(Boolean));
+  $("#mapa-sub").textContent=`${vezes(n)} · ${periodo.replace(/^em |^entre /,"")} · só você vê`;
+  const ord=m=>Object.entries(m).sort((a,b)=>b[1]-a[1]);
+  const linhas=ord(count(L,"linhas")),sens=ord(count(L,"sensacoes")),emos=ord(count(L,"emocoes"));
+  const difs=ord(count(LT,"dificuldades")).filter(([k])=>k!=="Nada atrapalhou");
+  const semDif=LT.filter(e=>(e.dificuldades||[]).includes("Nada atrapalhou")).length;
+  const tP=termo(L,"intensidade"),tE=LT.length?termo(LT,"entrega"):null;
+  const porLinha=linhas.map(([nome,q])=>{const xs=L.filter(e=>(e.linhas||[]).includes(nome));const s=ord(count(xs,"sensacoes"));
+    return{nome,q,s:s.slice(0,2).map(x=>x[0]),int:media(xs,"intensidade")}});
+  const b=t=>`<b>${esc(t)}</b>`;
+  const secoes=[];
+
+  // 1. visão geral
+  let p1=`${periodo[0].toUpperCase()+periodo.slice(1)}, você fez ${vezes(n)}: ${tiposTxt}.`;
+  if(linhas.length){p1+=` A linha que mais se fez presente na sua caminhada foi ${b(linhas[0][0])}, em ${vezes(linhas[0][1])}`;
+    p1+=linhas.length>1?`, seguida de ${lista(linhas.slice(1,3).map(x=>esc(x[0])))}.`:"."}
+  if(emos.length)p1+=` A emoção que mais acompanhou você foi ${b(low(emos[0][0]))}${emos.length>1?`, ao lado de ${esc(low(emos[1][0]))}`:""}.`;
+  secoes.push(["Visão geral",[p1]]);
+
+  // 2. presença e corpo
+  const P2=[];
+  let p2=`Em média, você sentiu a presença de forma ${b(fx(tP.med,FX_P))}. ${experiencia(tP)}`;
+  if(porLinha.length>1){const f=[...porLinha].sort((a,b)=>b.int-a.int);
+    if(f[0].int-f[f.length-1].int>=.5)p2+=` Onde a presença chega com mais força é em ${b(f[0].nome)}, de forma ${fx(f[0].int,FX_P)}; de forma mais sutil, em ${esc(f[f.length-1].nome)}, ${fx(f[f.length-1].int,FX_P)}.`;
+    else p2+=` A intensidade é parecida entre as linhas que você sente.`}
+  P2.push(p2);
+  if(sens.length){let p3=`No corpo, o sinal mais frequente é ${b(low(sens[0][0]))}, presente em ${sens[0][1]} de ${vezes(n)}`;
+    p3+=sens.length>1?`, junto com ${lista(sens.slice(1,3).map(x=>esc(low(x[0]))))}.`:".";
+    const desc=porLinha.filter(p=>p.s.length).slice(0,3).map(p=>`quando ${esc(p.nome)} se aproxima, você costuma sentir ${lista(p.s.map(x=>esc(low(x))))}`);
+    if(desc.length&&porLinha.length>1)p3+=` Olhando por linha: ${desc.join("; ")}.`;
+    P2.push(p3)}
+  secoes.push(["Presença e corpo",P2]);
+
+  // 3. percepções e correlações (dentro e fora do terreiro)
+  const P6=[];const percAll=ord(count(L,"percepcoes"));
+  if(LF.length){const pf=ord(count(LF,"percepcoes")),cx=ord(count(LF,"contexto"));
+    let p=`Fora do terreiro, você registrou ${LF.length} ${LF.length>1?"experiências":"experiência"}.`;
+    if(pf.length)p+=` A percepção mais frequente foi ${b(low(pf[0][0]))}${pf[0][1]>1?` (${pf[0][1]} vezes)`:""}${pf.length>1?`, seguida de ${lista(pf.slice(1,3).map(x=>esc(low(x[0]))))}`:""}.`;
+    const CTXF={"Em casa":"em casa","Dormindo / ao acordar":"durante o sono ou ao acordar","Na rua":"na rua","No trabalho":"no trabalho","Na natureza":"na natureza","Em outro lugar":"em outros lugares"};const um=LF.length===1;
+    if(cx.length)p+=` ${um?"Ela aconteceu":"Elas aconteceram com mais frequência"} ${esc(CTXF[cx[0][0]]||low(cx[0][0]))}.`;
+    if(LT.length){const perto=LF.filter(f=>LT.some(t=>{const d=dias(t.data,f.data);return d>=0&&d<=3})).length;
+      if(perto)p+=` ${perto===LF.length?(um?"Ela veio":"Todas vieram"):`${perto} de ${LF.length} vieram`} até 3 dias depois de uma gira ou aula, o que sugere que o que você vive no terreiro continua reverberando no seu dia a dia.`;
+      else p+=` ${um?"Ela não aconteceu":"Elas não costumam acontecer"} logo depois das sessões no terreiro: ${um?"veio":"aparecem"} no seu próprio tempo.`}
+    P6.push(p)}
+  if(percAll.length){const pares=percAll.slice(0,3).map(([k])=>{const xs=L.filter(e=>(e.percepcoes||[]).includes(k));const l=ord(count(xs,"linhas"));return l.length?`quando a percepção é ${esc(low(k))}, a linha que mais aparece junto é ${esc(l[0][0])}`:null}).filter(Boolean);
+    if(pares.length)P6.push(`Cruzando seus registros: ${pares.join("; ")}.`);
+    if(LT.length&&LF.length){const pt=ord(count(LT,"percepcoes"));const pf=ord(count(LF,"percepcoes"));
+      if(pt.length&&pf.length)P6.push(pt[0][0]===pf[0][0]?`Sua percepção mais presente, dentro e fora do terreiro, é ${b(low(pt[0][0]))}.`:`No terreiro, a percepção mais comum é ${b(low(pt[0][0]))}; fora dele, é ${b(low(pf[0][0]))}.`)}}
+  if(LT.length&&LF.length){const sT=new Set(LT.flatMap(e=>e.sensacoes||[])),sF=new Set(LF.flatMap(e=>e.sensacoes||[]));const sc=[...sT].filter(x=>sF.has(x));
+    const lT=new Set(LT.flatMap(e=>e.linhas||[])),lF=new Set(LF.flatMap(e=>e.linhas||[]));const lc=[...lT].filter(x=>lF.has(x));
+    let p="";if(sc.length)p+=`Um sinal se repete em você: ${lista(sc.slice(0,3).map(x=>b(low(x))))} ${sc.length>1?"aparecem":"aparece"} tanto no terreiro quanto fora.`;
+    if(lc.length)p+=` ${lista(lc.slice(0,3).map(x=>b(x)))} ${lc.length>1?"se fazem":"se faz"} presente${lc.length>1?"s":""} dentro e fora do terreiro.`;
+    if(p)P6.push(p.trim())}
+  if(P6.length)secoes.push(["Percepções, dentro e fora do terreiro",P6]);
+
+  // 4. dificuldades e entrega (só terreiro)
+  const P3=[];
+  if(difs.length){let p=`O que mais tem atrapalhado a sua conexão no terreiro é ${b(low(difs[0][0]))}, marcado em ${vezes(difs[0][1])}`;
+    p+=difs.length>1?`, seguido de ${lista(difs.slice(1,3).map(x=>esc(low(x[0]))))}.`:".";
+    if(semDif)p+=` Em ${vezes(semDif)}, você sentiu que nada atrapalhou.`;P3.push(p)}
+  else if(semDif)P3.push(`Até aqui, você não marcou dificuldades: em ${vezes(semDif)} sentiu que nada atrapalhou.`);
+  if(tE){let pe=`Nas giras e aulas, sua entrega média ficou ${b(fx(tE.med,FX_E))}. ${experiencia(tE)}`;
+    if(difs.length){const k=difs[0][0],com=LT.filter(e=>(e.dificuldades||[]).includes(k)),sem=LT.filter(e=>!(e.dificuldades||[]).includes(k));
+      if(com.length&&sem.length){const a=media(com,"entrega"),z=media(sem,"entrega");
+        if(z-a>=.5)pe+=` Nas sessões em que ${esc(low(k))} apareceu, sua entrega caiu para ${fx(a,FX_E)}, contra ${fx(z,FX_E)} nas demais. Esse parece ser um ponto-chave do seu caminho.`}}
+    const m=LT.length;if(m>=4){const h=Math.floor(m/2),a=media(LT.slice(0,h),"entrega"),z=media(LT.slice(m-h),"entrega"),d=z-a;
+      pe+=d>=.5?` Ao longo do tempo, sua entrega vem ${b("crescendo")}: passou de ${fx(a,FX_E)} nas primeiras sessões para ${fx(z,FX_E)} nas mais recentes.`
+        :d<=-.5?` Nas sessões mais recentes, sua entrega ${b("diminuiu")}, de ${fx(a,FX_E)} para ${fx(z,FX_E)}.`
+        :` Ao longo do tempo, sua entrega se mantém ${b("estável")}.`}
+    P3.push(pe)}
+  if(P3.length)secoes.push(["O que atrapalha e como você se entrega",P3]);
+
+  // 5. o que tocou
+  const P4=[];const pts=ord((()=>{const m={};LT.forEach(e=>{if(e.ponto)m[e.ponto]=(m[e.ponto]||0)+1});return m})());
+  const moms=LT.filter(e=>e.momento);const risc=LT.filter(e=>e.riscadoImg||e.riscadoTexto);const ultR=[...risc].reverse().find(e=>e.riscadoTexto);
+  if(pts.length)P4.push(`O ponto cantado que mais tocou você foi ${b(pts[0][0])}${pts[0][1]>1?`, lembrado em ${vezes(pts[0][1])}`:""}.`);
+  if(moms.length){const m=moms[moms.length-1];P4.push(`Entre os momentos que ficaram com você, o mais recente (${fmtData(m.data)}) foi: <i>${esc(m.momento)}</i>`)}
+  if(risc.length)P4.push(`Você registrou ${risc.length} ${risc.length>1?"pontos riscados":"ponto riscado"}.${ultR?` Sobre o mais recente, você intuiu: <i>${esc(ultR.riscadoTexto)}</i>`:""}`);
+  const sonho=[...LF].reverse().find(e=>(e.percepcoes||[]).includes("Sonhos")&&e.percepcaoTexto);
+  if(sonho)P4.push(`Do seu sonho mais recente registrado (${fmtData(sonho.data)}), ficou: <i>${esc(sonho.percepcaoTexto)}</i>`);
+  if(P4.length)secoes.push(["O que tocou você",P4]);
+
+  // 6. para observar
+  const P5=[];
+  if(tE&&tE.med<2.5)P5.push(`Sua entrega no terreiro ainda está mais contida. Vale levar isso para uma conversa com quem dirige a casa, contando também ${difs.length?`que ${esc(low(difs[0][0]))} costuma aparecer`:"o que você sente nas sessões"}.`);
+  if(tE&&tP.med>=3.5&&tE.med<3)P5.push(`Você sente a presença com força, mas a entrega não acompanha na mesma medida. Esse descompasso é um bom tema para observar nas próximas sessões.`);
+  if(tE&&tP.med<2.5&&tE.med>=3.5)P5.push(`Você tem conseguido se entregar, mesmo sentindo a presença de forma mais sutil. Cada linha chega no seu tempo.`);
+  if(LF.length>=2&&LF.length>=LT.length)P5.push(`Boa parte das suas percepções acontece fora do terreiro. Partilhar essas experiências com quem dirige pode ajudar a entender o que elas pedem de você.`);
+  if(LT.length>=4&&media(LT.slice(LT.length-Math.floor(LT.length/2)),"entrega")-media(LT.slice(0,Math.floor(LT.length/2)),"entrega")>=.5)P5.push(`Seu caminho mostra avanço. Observe o que mudou nas sessões em que você conseguiu se entregar mais.`);
+  if(n<4)P5.push(`Com mais registros, este diagnóstico fica mais preciso e passa a mostrar as correlações entre o que você vive dentro e fora do terreiro.`);
+  if(!P5.length)P5.push(`Continue registrando com sinceridade. É a soma dos registros que revela o desenho da sua caminhada.`);
+  secoes.push(["Para observar daqui pra frente",P5]);
+
+  const ultImg=[...risc].reverse().find(e=>e.riscadoImg&&IMG_OK.test(e.riscadoImg));
+  MAPA={n,periodo,tiposTxt,secoes,ultImg};
+  el.innerHTML=`<div class="diag">${secoes.map(([t,ps])=>`<section class="diag-sec"><h3>${t}</h3>${ps.map(p=>`<p>${p}</p>`).join("")}</section>`).join("")}
+    <p class="note">Este diagnóstico é montado a partir dos seus registros. Ele ajuda a enxergar a caminhada, mas não substitui a orientação de quem dirige a casa.</p>
+    <div class="acoes"><button class="btn" id="mapa-pdf">Exportar diagnóstico em PDF</button></div>
+</div>`;
+  $("#mapa-pdf").onclick=gerarPDF;
+}
+
+const PDF_COR={"Erês":[210,104,154],"Caboclos":[46,134,80],"Pretos-velhos":[74,74,74],"Exus":[179,38,46],"Pombagiras":[142,31,79],"Ciganos":[185,127,14],"Zé Pilintra":[200,53,44],"Orixás":[111,123,168]};
+const txt=h=>{const d=document.createElement("div");d.innerHTML=h;return d.textContent};
+async function gerarPDF(){
+  if(!MAPA)return;
+  if(!window.jspdf){toast("O gerador de PDF não carregou. Recarregue a página.");return}
+  const btn=$("#mapa-pdf");btn.disabled=true;btn.textContent="Gerando PDF…";
+  try{
+    const doc=new jspdf.jsPDF({unit:"mm",format:"a4"});const W=210,M=20,CW=W-2*M;let y=0;
+    const INK=[23,36,58],MUT=[90,106,126],ACC=[42,94,164],CAN=[183,122,18];
+    const novaPag=()=>{doc.addPage();y=22};const cabe=h=>{if(y+h>278)novaPag()};
+    // guia
+    const cores=Object.values(PDF_COR);for(let i=0;i<41;i++){const x=M+i*CW/40,u=(x-W/2)/(CW/2),yy=10+12*(1-u*u);const c=cores[Math.floor(i/3)%cores.length];doc.setFillColor(...c);doc.circle(x,yy,i%3===1?1.6:1.3,"F")}
+    doc.setFillColor(...CAN);doc.circle(W/2,25.5,1.9,"F");
+    y=36;doc.setTextColor(...MUT);doc.setFont("helvetica","bold");doc.setFontSize(8);doc.text("UMBANDA · DIÁRIO DE DESENVOLVIMENTO",M,y);
+    y+=9;doc.setTextColor(...INK);doc.setFont("times","bold");doc.setFontSize(24);doc.text("Diagnóstico da caminhada",M,y);
+    y+=8;doc.setFont("helvetica","normal");doc.setFontSize(10.5);doc.setTextColor(...MUT);
+    const hoje=new Date().toLocaleDateString("pt-BR");
+    doc.text(doc.splitTextToSize(`${S.meNome?S.meNome+" · ":""}${vezes(MAPA.n)} (${txt(MAPA.tiposTxt)}) · ${MAPA.periodo} · emitido em ${hoje}`,CW),M,y);
+    y+=5;doc.setDrawColor(201,210,220);for(let x=M;x<W-M;x+=3.5){doc.setFillColor(201,210,220);doc.circle(x,y,.55,"F")}y+=9;
+    MAPA.secoes.forEach(([t,ps])=>{cabe(18);
+      doc.setFont("helvetica","bold");doc.setFontSize(8.5);doc.setTextColor(...ACC);doc.text(t.toUpperCase(),M,y);y+=6;
+      ps.forEach(h=>{const r=doc.splitTextToSize(txt(h),CW);r.forEach(l=>{cabe(6);doc.setFont("times","normal");doc.setFontSize(12.5);doc.setTextColor(...INK);doc.text(l,M,y);y+=5.8});y+=3});
+      y+=4});
+    cabe(10);doc.setFont("helvetica","italic");doc.setFontSize(8.5);doc.setTextColor(...MUT);
+    doc.text(doc.splitTextToSize("Diagnóstico montado a partir dos seus registros. Ajuda a enxergar a caminhada, mas não substitui a orientação de quem dirige a casa.",CW),M,y);y+=12;
+    if(MAPA.ultImg){try{const props=doc.getImageProperties(MAPA.ultImg.riscadoImg);const h=Math.min(70,CW*props.height/props.width),w=h*props.width/props.height;
+      cabe(h+16);doc.setFont("helvetica","bold");doc.setFontSize(8);doc.setTextColor(...MUT);doc.text("PONTO RISCADO MAIS RECENTE · "+fmtData(MAPA.ultImg.data),M,y);y+=4;
+      doc.addImage(MAPA.ultImg.riscadoImg,"JPEG",M,y,w,h);y+=h+5;
+      if(MAPA.ultImg.riscadoTexto){const r=doc.splitTextToSize(MAPA.ultImg.riscadoTexto,CW);cabe(r.length*5.5);doc.setFont("times","italic");doc.setFontSize(12);doc.setTextColor(...INK);doc.text(r,M,y);y+=r.length*5.5}}catch(e){}}
+    const tot=doc.getNumberOfPages();for(let i=1;i<=tot;i++){doc.setPage(i);doc.setFont("helvetica","normal");doc.setFontSize(8);doc.setTextColor(...MUT);
+      doc.text("Diário da Gira · relatório pessoal e privado",M,289);doc.text(`${i} / ${tot}`,W-M,289,{align:"right"})}
+    doc.save(`diagnostico-da-caminhada-${new Date().toISOString().slice(0,10)}.pdf`);
+    toast("PDF gerado");
+  }catch(e){toast("Não foi possível gerar o PDF.")}
+  finally{btn.disabled=false;btn.textContent="Exportar relatório em PDF"}
+}
+
+function bars(map,cls=""){const arr=Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,8);const max=arr.length?arr[0][1]:1;
+  return`<div class="bars">${arr.map(([k,v])=>`<div class="bar ${cls}"><span class="lab">${COR[k]?`<span style="color:var(--l-${COR[k]})">${icL(k)}</span>`:""}<span>${esc(k)}</span></span><div class="track"><div class="fill" style="width:${Math.max(4,v/max*100)}%;${COR[k]?`background:var(--l-${COR[k]})`:""}"></div></div><span class="n">${v}</span></div>`).join("")}</div>`}
+function count(list,key){const m={};list.forEach(e=>(e[key]||[]).forEach(v=>m[v]=(m[v]||0)+1));return m}
+
+let linhaSel=null;
+function renderCaderno(){
+  const doTurma=S.caderno.filter(c=>c.turmaId===S.turmaSel);
+  const real=doTurma.length>0;const L=real?doTurma:EXEMPLO;
+  const tn=S.turmas.find(t=>t.id===S.turmaSel);$("#cad-head-turma")&&($("#cad-head-turma").textContent=tn?tn.nome:"");
+  $("#cad-exemplo").hidden=real;
+  const datas=L.map(e=>e.data).filter(Boolean).sort();
+  $("#cad-sub").textContent=datas.length?`${fmtData(datas[0])} a ${fmtData(datas[datas.length-1])}`:"";
+  const giras=new Set(datas).size;
+  const linhas=count(L,"linhas"),sens=count(L,"sensacoes");const difs=count(L,"dificuldades");delete difs["Nada atrapalhou"];
+  const nomesLinha=Object.keys(linhas).sort((a,b)=>linhas[b]-linhas[a]);
+  if(!linhaSel||!nomesLinha.includes(linhaSel))linhaSel=nomesLinha[0];
+  const porLinha=count(L.filter(e=>(e.linhas||[]).includes(linhaSel)),"sensacoes");
+  const intLinha={};nomesLinha.forEach(n=>{const xs=L.filter(e=>(e.linhas||[]).includes(n));intLinha[n]=(xs.reduce((a,b)=>a+b.intensidade,0)/xs.length).toFixed(1)});
+  const pontos={};L.forEach(e=>{if(e.ponto){const k=e.ponto.trim();pontos[k]=(pontos[k]||0)+1}});
+  const pontosArr=Object.entries(pontos).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const momentos=L.filter(e=>e.momento).sort((a,b)=>(b.data||"").localeCompare(a.data||"")).slice(0,8);
+  const meses={};L.forEach(e=>{if(!e.data)return;const k=e.data.slice(0,7);(meses[k]=meses[k]||[]).push(e.intensidade)});
+  const mesesArr=Object.keys(meses).sort().map(k=>[mesAno(k+"-01"),meses[k].reduce((a,b)=>a+b,0)/meses[k].length]);
+
+  $("#cad").innerHTML=`
+    <div class="stats">
+      <div class="stat"><b>${L.length}</b><span>registros</span></div>
+      <div class="stat"><b>${giras}</b><span>encontros</span></div>
+      <div class="stat"><b>${nomesLinha.length}</b><span>linhas sentidas</span></div>
+    </div>
+    <section class="cad"><h3>Linhas mais sentidas</h3>${bars(linhas)}</section>
+    <section class="cad"><h3>O que o corpo diz em cada linha</h3>
+      <select id="cad-linha" aria-label="Escolher linha">${nomesLinha.map(n=>`<option ${n===linhaSel?"selected":""}>${esc(n)}</option>`).join("")}</select>
+      ${bars(porLinha)}
+      <p class="note">Presença média em ${esc(linhaSel||"")}: ${intLinha[linhaSel]?fx(+intLinha[linhaSel],FX_P):"-"}</p>
+    </section>
+    <section class="cad"><h3>Sensações mais comuns na turma</h3>${bars(sens)}</section>
+    ${Object.keys(count(L,"percepcoes")).length?`<section class="cad"><h3>Percepções mais comuns, dentro e fora do terreiro</h3>${bars(count(L,"percepcoes"),"c")}</section>`:""}
+    ${Object.keys(difs).length?`<section class="cad"><h3>O que mais atrapalhou a turma</h3>${bars(difs,"c")}</section>`:""}
+    ${mesesArr.length>1?`<section class="cad"><h3>Intensidade média por mês</h3>${bars(Object.fromEntries(mesesArr.map(([k,v])=>[k,+v.toFixed(1)])))}</section>`:""}
+    <section class="cad"><h3>Pontos que mais tocaram</h3>
+      ${pontosArr.length?`<ol class="rank">${pontosArr.map(([k,v])=>`<li>${esc(k)} <span>· ${v} ${v>1?"vezes":"vez"}</span></li>`).join("")}</ol>`:`<p class="note">Nenhum ponto registrado ainda.</p>`}
+    </section>
+    <section class="cad"><h3>Momentos mais tocantes</h3>
+      ${momentos.length?`<div class="quotes">${momentos.map(m=>`<blockquote>${esc(m.momento)}<cite>${fmtData(m.data)}${m.linhas&&m.linhas.length?" · "+esc(m.linhas.join(", ")):""}</cite></blockquote>`).join("")}</div>`:`<p class="note">Nenhum momento registrado ainda.</p>`}
+    </section>
+    <p class="note">Tudo aqui é anônimo e vem só de registros autorizados para o caderno. Antes de circular fora da turma, o material passa pelo dirigente.</p>`;
+  const sel=$("#cad-linha");if(sel)sel.onchange=()=>{linhaSel=sel.value;renderCaderno()};
+}
+
+function renderAll(){renderMinhas();renderMapa();renderRoda();renderCaderno()}
+
+// ===== Dados =====
+async function carregar(){
+  if(!S.sb||!S.uid)return;
+  const q=await Promise.all([
+    S.sb.from("turmas").select("id,nome,criado_em").order("criado_em"),
+    S.sb.from("membros").select("turma_id,user_id"),
+    S.sb.from("registros").select("id,dados,criado_em").order("criado_em",{ascending:false}),
+    S.sb.from("roda").select("id,turma_id,autor_id,dados,criado_em").order("criado_em",{ascending:false}).limit(300),
+    S.sb.from("caderno").select("id,turma_id,dados").limit(2000),
+    S.sb.from("perfis").select("id,nome,email,papel").order("nome"),
+    S.admin?S.sb.from("convites").select("*").order("criado_em",{ascending:false}):Promise.resolve({data:[]})
+  ]);
+  if(q.some(r=>r.error)){toast("Não foi possível carregar tudo. Confira sua conexão.");}
+  const [t,m,reg,ro,ca,pf,cv]=q.map(r=>r.data||[]);
+  S.turmas=t.map(x=>({id:x.id,nome:x.nome,membros:m.filter(y=>y.turma_id===x.id).map(y=>y.user_id)}));
+  S.minhas=reg.map(r=>({...r.dados,id:r.id}));
+  S.roda=ro.map(r=>({...r.dados,id:r.id,turmaId:r.turma_id,autor:r.autor_id}));
+  S.caderno=ca.map(c=>({...c.dados,id:c.id,turmaId:c.turma_id}));
+  S.pessoas=pf;S.perfisMap=Object.fromEntries(pf.map(p=>[p.id,p]));S.convites=cv;
+  const eu=S.perfisMap[S.uid];if(eu){S.perfil=eu;const novo=eu.papel==="dirigente";if(novo!==S.admin){S.admin=novo;mostrarIdent()}}
+  aplicarPerfil();renderMinhas();renderMapa();
+}
+function mostrarIdent(){
+  const id=$("#ident");id.hidden=false;id.innerHTML="";
+  const n=document.createElement("span");n.textContent="Entrou como "+((S.perfil&&S.perfil.nome)||"você");
+  const r=document.createElement("span");r.className="role"+(S.admin?" adm":"");r.textContent=S.admin?"Dirigente":"Cursista";
+  const sair=document.createElement("button");sair.className="linkbtn sair";sair.type="button";sair.textContent="Sair";sair.onclick=()=>S.sb.auth.signOut();
+  id.append(n,r,sair);S.meNome=(S.perfil&&S.perfil.nome)||"";
+}
+
+// ===== Login =====
+const TELAS=["entrar","primeiro","esqueci","nova"];
+function tela(qual,msg,erro){TELAS.forEach(t=>$("#f-"+t).hidden=t!==qual);const m=$("#login-msg");m.hidden=!msg;m.textContent=msg||"";m.className="msg"+(erro?" erro":"")}
+function mostrarLogin(qual,msg,erro){$("#app").hidden=true;$("#tela-login").hidden=false;tela(qual||"entrar",msg,erro)}
+document.querySelectorAll("[data-ir]").forEach(b=>b.onclick=()=>tela(b.dataset.ir));
+const ocupado=(f,on)=>{const b=f.querySelector("button[type=submit]");b.disabled=on;if(on){b.dataset.rotulo=b.textContent;b.textContent="Aguarde…"}else if(b.dataset.rotulo)b.textContent=b.dataset.rotulo};
+
+async function entrar(session){
+  S.uid=session.user.id;
+  const{data:eu,error}=await S.sb.from("perfis").select("id,nome,email,papel").eq("id",S.uid).single();
+  if(error||!eu){await S.sb.auth.signOut();mostrarLogin("entrar","Sua conta não está ligada a um convite. Fale com a dirigente.",true);return}
+  S.perfil=eu;S.admin=eu.papel==="dirigente";
+  $("#tela-login").hidden=true;$("#app").hidden=false;mostrarIdent();
+  await carregar();
+}
+
+let recuperando=false;
+(async()=>{
+  if(!window.supabase||SUPABASE_URL.startsWith("COLE")||SUPABASE_ANON_KEY.startsWith("COLE")){mostrarLogin("entrar");$("#login-config").hidden=false;return}
+  S.sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+  S.sb.auth.onAuthStateChange((ev,session)=>{
+    if(ev==="PASSWORD_RECOVERY"){recuperando=true;mostrarLogin("nova");return}
+    if(ev==="SIGNED_OUT"){S.uid=null;S.perfil=null;S.admin=false;mostrarLogin("entrar","Você saiu do diário.");return}
+    if(ev==="SIGNED_IN"&&session&&!recuperando&&S.uid!==session.user.id)setTimeout(()=>entrar(session),0);
+  });
+  const{data}=await S.sb.auth.getSession();
+  if(data.session&&!recuperando&&!location.hash.includes("type=recovery"))entrar(data.session);
+  else if(!recuperando)mostrarLogin("entrar");
+  setInterval(()=>{if(S.uid&&!document.hidden)carregar()},60000);
+  document.addEventListener("visibilitychange",()=>{if(S.uid&&!document.hidden)carregar()});
+})();
+
+$("#f-entrar").addEventListener("submit",async ev=>{ev.preventDefault();const f=ev.target;ocupado(f,true);
+  const{error}=await S.sb.auth.signInWithPassword({email:$("#le-email").value.trim().toLowerCase(),password:$("#le-senha").value});
+  ocupado(f,false);
+  if(error)tela("entrar",/confirm/i.test(error.message)?"Confirme seu e-mail pelo link que enviamos antes de entrar.":"E-mail ou senha incorretos.",true);
+});
+$("#f-primeiro").addEventListener("submit",async ev=>{ev.preventDefault();const f=ev.target;
+  const email=$("#lp-email").value.trim().toLowerCase(),senha=$("#lp-senha").value;
+  if(senha!==$("#lp-senha2").value){tela("primeiro","As senhas não são iguais.",true);return}
+  ocupado(f,true);
+  const{data:ok}=await S.sb.rpc("convite_existe",{e:email});
+  if(!ok){ocupado(f,false);tela("primeiro","Não encontramos um convite para este e-mail. Confira o endereço ou peça o convite à dirigente.",true);return}
+  const{data,error}=await S.sb.auth.signUp({email,password:senha,options:{data:{nome:$("#lp-nome").value.trim()},emailRedirectTo:location.origin+location.pathname}});
+  ocupado(f,false);
+  if(error){tela("primeiro",/registered|already/i.test(error.message)?"Este e-mail já tem conta. Use Entrar ou Esqueci minha senha.":"Não foi possível criar a conta. Tente de novo.",true);return}
+  if(!data.session)tela("entrar","Conta criada! Enviamos um link de confirmação para o seu e-mail. Depois de confirmar, entre com sua senha.");
+});
+$("#f-esqueci").addEventListener("submit",async ev=>{ev.preventDefault();const f=ev.target;ocupado(f,true);
+  await S.sb.auth.resetPasswordForEmail($("#lr-email").value.trim().toLowerCase(),{redirectTo:location.origin+location.pathname});
+  ocupado(f,false);tela("entrar","Se este e-mail tiver conta, você vai receber um link para criar uma nova senha.");
+});
+$("#f-nova").addEventListener("submit",async ev=>{ev.preventDefault();const f=ev.target;
+  if($("#ln-senha").value!==$("#ln-senha2").value){tela("nova","As senhas não são iguais.",true);return}
+  ocupado(f,true);const{data,error}=await S.sb.auth.updateUser({password:$("#ln-senha").value});ocupado(f,false);
+  if(error){tela("nova","Não foi possível salvar. O link pode ter expirado: peça outro em Esqueci minha senha.",true);return}
+  recuperando=false;history.replaceState(null,"",location.pathname);
+  const{data:sd}=await S.sb.auth.getSession();if(sd.session)entrar(sd.session);else mostrarLogin("entrar","Senha alterada. Entre com a nova senha.");
+});
+</script>
+</body>
+</html>
