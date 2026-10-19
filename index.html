@@ -1139,7 +1139,7 @@ async function entrar(session){
 
 let recuperando=false;
 (async()=>{
-  if(!window.supabase||SUPABASE_URL.startsWith("COLE")||SUPABASE_ANON_KEY.startsWith("COLE")){mostrarLogin("entrar");$("#login-config").hidden=false;return}
+  if(!window.supabase||SUPABASE_URL.startsWith("COLE")||SUPABASE_ANON_KEY.startsWith("COLE")){mostrarLogin("entrar");const lc=$("#login-config");lc.textContent=!window.supabase?"Não consegui carregar a biblioteca do Supabase. Confira a internet e recarregue a página (Ctrl+Shift+R).":"O app ainda não foi ligado ao Supabase. Preencha SUPABASE_URL e SUPABASE_ANON_KEY no arquivo index.html.";lc.hidden=false;return}
   S.sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
   S.sb.auth.onAuthStateChange((ev,session)=>{
     if(ev==="PASSWORD_RECOVERY"){recuperando=true;mostrarLogin("nova");return}
@@ -1166,7 +1166,7 @@ $("#f-primeiro").addEventListener("submit",async ev=>{ev.preventDefault();const 
   if(!ok){ocupado(f,false);tela("primeiro","Não encontramos um convite para este e-mail. Confira o endereço ou peça o convite à dirigente.",true);return}
   const{data,error}=await S.sb.auth.signUp({email,password:senha,options:{data:{nome:$("#lp-nome").value.trim()},emailRedirectTo:location.origin+location.pathname}});
   ocupado(f,false);
-  if(error){tela("primeiro",/registered|already/i.test(error.message)?"Este e-mail já tem conta. Use Entrar ou Esqueci minha senha.":"Não foi possível criar a conta. Tente de novo.",true);return}
+  if(error){tela("primeiro",/registered|already/i.test(error.message)?"Este e-mail já tem conta. Use Entrar ou Esqueci minha senha.":"Não foi possível criar a conta. Tente de novo. (Detalhe: "+(error.message||"sem detalhe")+")",true);return}
   if(!data.session)tela("entrar","Conta criada! Enviamos um link de confirmação para o seu e-mail. Depois de confirmar, entre com sua senha.");
 });
 $("#f-esqueci").addEventListener("submit",async ev=>{ev.preventDefault();const f=ev.target;ocupado(f,true);
