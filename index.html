@@ -92,7 +92,22 @@ label.chip:has(input:checked){background:var(--accent);border-color:var(--accent
 .moment{background:var(--candle-soft);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}
 .moment small{font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--candle);font-weight:700}
 .moment p{margin:0;font-family:var(--display);font-style:italic;overflow-wrap:anywhere}
-.dots{font-variant-numeric:tabular-nums;color:var(--accent);letter-spacing:2px}
+.dots{display:inline-flex;gap:2px;vertical-align:middle}
+.dots .ic{width:14px;height:14px;color:var(--candle);opacity:.3}
+.dots .ic.on{opacity:1;fill:var(--candle-soft)}
+.reac{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.reac button{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:none;border-radius:999px;padding:5px 12px;font:inherit;font-size:.88rem;color:var(--ink);cursor:pointer;min-height:36px}
+.reac button .ic{width:17px;height:17px;color:var(--c)}
+.reac button b{font-variant-numeric:tabular-nums;font-weight:700}
+.reac button:hover{border-color:var(--c)}
+.reac button[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--c)}
+.reac button:disabled{opacity:.6}
+.pessoa-b{background:none;border:0;padding:0;font:inherit;font-weight:700;color:var(--accent);cursor:pointer;text-align:left;display:inline-flex;flex-direction:column;gap:0}
+.pessoa-b span{font-size:.76rem;font-weight:500;color:var(--muted)}
+.pessoa-b:hover{text-decoration:underline}
+.ficha-topo{display:flex;flex-direction:column;gap:6px;margin-bottom:6px}
+.ficha-topo h3{margin:0}
+.ficha-lista{display:flex;flex-direction:column;gap:14px;margin-top:10px}
 .acolhe{border-top:1px solid var(--line);padding-top:10px;display:flex;flex-direction:column;gap:8px}
 .acolhe .c{font-size:.93rem}
 .acolhe .c b{font-weight:700}
@@ -450,9 +465,9 @@ nav.tabs button .ic{width:16px;height:16px}
 
       <fieldset id="fs-partilha">
         <legend>Partilhar na roda?</legend>
-        <p class="hint">A dirigente acompanha a roda e sempre vê quem escreveu cada relato. “Sem meu nome” esconde o nome só das colegas.</p>
+        <p class="hint">A dirigente lê todos os seus registros e sempre vê quem escreveu, inclusive os que você não partilha. “Sem meu nome” esconde o nome só das colegas da turma.</p>
         <div class="radios" id="f-partilha">
-          <label><input type="radio" name="partilha" value="nao" checked> <span>Não, fica só no meu diário</span></label>
+          <label><input type="radio" name="partilha" value="nao" checked> <span>Não partilhar com as colegas (só a dirigente lê)</span></label>
           <label><input type="radio" name="partilha" value="nome"> <span>Sim, com meu nome</span></label>
           <label><input type="radio" name="partilha" value="anonimo"> <span>Sim, sem meu nome para as colegas</span></label>
         </div>
@@ -492,7 +507,7 @@ nav.tabs button .ic{width:16px;height:16px}
   <!-- RODA -->
   <section id="p-roda" role="tabpanel" hidden>
     <h2>Roda de partilha</h2>
-    <p class="lead" id="roda-lead">Relatos que a turma escolheu partilhar. Aqui ninguém julga a experiência do outro.</p>
+    <p class="lead" id="roda-lead">Relatos que a turma escolheu partilhar. Aqui ninguém julga a experiência do outro. Responda com Axé, Laroyê ou Okê Caboclo e deixe uma palavra de acolhimento.</p>
     <div class="turmabar" id="roda-filtro" hidden></div>
     <div class="list" id="roda"></div>
   </section>
@@ -511,7 +526,7 @@ nav.tabs button .ic{width:16px;height:16px}
   <!-- TURMAS (dirigente) -->
   <section id="p-turmas" role="tabpanel" hidden>
     <h2>Turmas e convites</h2>
-    <p class="lead">Convide as pessoas, crie turmas e coloque cada cursista na sua. Os diários individuais continuam privados. Você acompanha as contagens e a roda de partilha, com a autoria de cada relato.</p>
+    <p class="lead">Convide as pessoas, crie turmas e coloque cada cursista na sua. Como dirigente, você vê todos os registros de cada cursista, com nome, além da roda de partilha e do painel da turma.</p>
 
     <section class="cad">
       <h3>Convidar alguém</h3>
@@ -698,7 +713,7 @@ function aplicarPerfil(){
   if(!vis.find(t=>t.id===S.turmaSel)){S.turmaSel=vis[0]?vis[0].id:null}
   const bar=$("#turmabar");
   if(vis.length>1){bar.innerHTML=`<span>Turma</span><select id="turma-sel" aria-label="Escolher turma">${vis.map(t=>`<option value="${esc(t.id)}" ${t.id===S.turmaSel?"selected":""}>${esc(t.nome)}</option>`).join("")}</select>`;
-    $("#turma-sel").onchange=ev=>{S.turmaSel=ev.target.value;renderRoda();renderCaderno();renderPainel()}}
+    $("#turma-sel").onchange=ev=>{S.turmaSel=ev.target.value;S.fichaPessoa=null;renderRoda();renderCaderno();renderPainel()}}
   else if(vis.length===1){bar.innerHTML=`<span>Turma</span><b></b>`;bar.querySelector("b").textContent=vis[0].nome}
   const semTurma=!S.turmaSel;
   $("#sem-turma").hidden=!semTurma;$("#fs-partilha").hidden=semTurma;$("#fs-caderno").hidden=semTurma;
@@ -806,7 +821,7 @@ async function apagar(id){
 }
 
 // render
-const dots=n=>"●".repeat(n)+"○".repeat(5-n);
+const dots=n=>{n=Math.max(0,Math.min(5,+n||0));return Array.from({length:5},(_,i)=>`<svg class="ic${i<n?" on":""}" viewBox="0 0 24 24" aria-hidden="true">${ICON.chama}</svg>`).join("")};
 function tags(arr,cls=""){return arr&&arr.length?`<div class="tags">${arr.map(t=>`<span class="tag ${cls}">${esc(t)}</span>`).join("")}</div>`:""}
 function tagsL(arr){return arr&&arr.length?`<div class="tags">${arr.map(t=>`<span class="tag l" style="--c:${corLinha(t)}">${icL(t)}${esc(t)}</span>`).join("")}</div>`:""}
 const corCard=e=>e.linhas&&e.linhas.length?` style="--c:${corLinha(e.linhas[0])}"`:"";
@@ -837,7 +852,7 @@ function renderMinhas(){
       ${e.dificuldades&&e.dificuldades.length?`<p class="note">Atrapalhou: ${esc(e.dificuldades.join(", "))}</p>`:""}
       ${moment(e)}${riscado(e)}
       ${e.relato?`<p class="relato">${esc(e.relato)}</p>`:""}
-      <div class="meta"><span>${e.partilha==="nao"?"Só no diário":e.partilha==="nome"?"Partilhado com nome":"Partilhado sem nome para as colegas"}</span><span>${e.caderno==="sim"?"No caderno":"Fora do caderno"}</span></div>
+      <div class="meta"><span>${e.partilha==="nao"?"Só você e a dirigente":e.partilha==="nome"?"Partilhado com nome":"Partilhado sem nome para as colegas"}</span><span>${e.caderno==="sim"?"No caderno":"Fora do caderno"}</span></div>
       <div class="mine-actions" data-id="${esc(e.id)}"><button class="btn ghost danger" data-act="del">Apagar</button></div>
     </article>`).join("");
   el.querySelectorAll("[data-act=del]").forEach(b=>{
@@ -850,7 +865,7 @@ function renderMinhas(){
 
 async function renderRoda(){
   const el=$("#roda"),fl=$("#roda-filtro");
-  $("#roda-lead").textContent=S.admin?"Todos os relatos que a turma partilhou. Só você, dirigente, vê a autoria de cada um, mesmo quando a pessoa escolheu não mostrar o nome às colegas.":"Relatos que a turma escolheu partilhar. Aqui ninguém julga a experiência do outro.";
+  $("#roda-lead").textContent=S.admin?"Todos os relatos que a turma partilhou. Só você, dirigente, vê a autoria de cada um, mesmo quando a pessoa escolheu não mostrar o nome às colegas.":"Relatos que a turma escolheu partilhar. Aqui ninguém julga a experiência do outro. Responda com Axé, Laroyê ou Okê Caboclo e deixe uma palavra de acolhimento.";
   fl.hidden=true;
   if(!S.turmaSel){el.innerHTML=`<div class="empty"><b>Você ainda não está numa turma</b>${S.admin?"Crie uma turma na aba Turmas para abrir a roda.":"A roda aparece assim que o dirigente te colocar numa turma."}</div>`;return}
   const autorReal=r=>r.autor||S.autoria[r.id]||null;
@@ -876,10 +891,50 @@ async function renderRoda(){
       ${tagsL(r.linhas)}${tags(r.sensacoes,"s")}
       ${moment(r)}${riscado(r)}
       ${r.relato?`<p class="relato">${esc(r.relato)}</p>`:""}
+      <div class="reac" data-reac="${esc(r.id)}">${reacHTML(r.id)}</div>
       <div class="acolhe"><div class="cs"></div>
-        <button class="btn ghost" data-open>Acolher este relato</button></div>
+        <button class="btn ghost" data-open>${icC("coracao")} Acolher este relato</button></div>
     </article>`}).join("");
   el.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>abrirAcolhe(b.closest(".card")));
+  el.querySelectorAll("[data-reac]").forEach(ligaReac);
+  carregarAcolhimentos(R.map(r=>r.id));
+}
+
+// reações da roda: nomes e ícones da casa
+const REAC=[
+ {t:"axe",w:"Axé",m:"força vital, recebo o seu relato",k:"estrela"},
+ {t:"laroye",w:"Laroyê",m:"salve Exu, o mensageiro",k:"exu"},
+ {t:"oke",w:"Okê Caboclo",m:"salve o Caboclo, a força da mata",k:"caboclo"}
+];
+const nomeDe=id=>(S.perfisMap[id]&&S.perfisMap[id].nome)||"Sem nome";
+function reacHTML(id){
+  const L=(S.reacoes||[]).filter(x=>x.roda_id===id);
+  return REAC.map(r=>{const q=L.filter(x=>x.tipo===r.t),eu=q.some(x=>x.user_id===S.uid);
+    const quem=S.admin&&q.length?" · "+q.map(x=>nomeDe(x.user_id)).join(", "):"";
+    return`<button type="button" data-r="${r.t}" aria-pressed="${eu}" title="${esc(r.m+quem)}" style="--c:${corIc(r.k)}">${icC(r.k)}<span>${esc(r.w)}</span>${q.length?`<b>${q.length}</b>`:""}</button>`}).join("");
+}
+function ligaReac(box){
+  box.onclick=async ev=>{const b=ev.target.closest("button[data-r]");if(!b||b.disabled)return;
+    const id=box.dataset.reac,t=b.dataset.r;
+    const tem=(S.reacoes||[]).some(x=>x.roda_id===id&&x.user_id===S.uid&&x.tipo===t);
+    b.disabled=true;let error=null;
+    if(tem){const r=await S.sb.from("roda_reacoes").delete().eq("roda_id",id).eq("user_id",S.uid).eq("tipo",t);error=r.error;
+      if(!error)S.reacoes=S.reacoes.filter(x=>!(x.roda_id===id&&x.user_id===S.uid&&x.tipo===t))}
+    else{const r=await S.sb.from("roda_reacoes").insert({roda_id:id,tipo:t});error=r.error;
+      if(!error)S.reacoes=[...(S.reacoes||[]),{roda_id:id,user_id:S.uid,tipo:t}]}
+    if(error)toast("Não foi possível registrar. Confira se a atualização do banco foi rodada.");
+    box.innerHTML=reacHTML(id)};
+}
+function pintaAcolhimento(box,c){const p=document.createElement("div");p.className="c";const b=document.createElement("b");
+  b.textContent=c.autor_id===S.uid?"Você":((S.perfisMap[c.autor_id]&&S.perfisMap[c.autor_id].nome)||"Alguém da turma");
+  p.append(b,": "+c.texto);box.appendChild(p)}
+async function carregarAcolhimentos(ids){
+  if(!ids.length)return;
+  const lotes=[];for(let i=0;i<ids.length;i+=40)lotes.push(ids.slice(i,i+40));
+  const rs=await Promise.all(lotes.map(l=>S.sb.from("acolhimentos").select("roda_id,autor_id,texto,criado_em").in("roda_id",l).order("criado_em")));
+  const por={};rs.forEach(r=>(r.data||[]).forEach(c=>(por[c.roda_id]=por[c.roda_id]||[]).push(c)));
+  document.querySelectorAll("#roda .card[data-id]").forEach(card=>{const box=card.querySelector(".cs");
+    if(!box||card.querySelector(".acolhe form"))return;box.innerHTML="";(por[card.dataset.id]||[]).forEach(c=>pintaAcolhimento(box,c))});
 }
 
 async function carregarComentarios(card){
@@ -1139,6 +1194,7 @@ async function renderPainel(){
   if(!S.admin)return;
   const el=$("#painel"),turma=S.turmaSel,tn=S.turmas.find(t=>t.id===turma);
   $("#painel-turma").textContent=tn?tn.nome:"";
+  if(S.fichaPessoa&&turma){renderFicha(el,turma,tn);return}
   if(!turma){el.innerHTML=`<div class="empty"><b>Nenhuma turma ainda</b>Crie a primeira na aba Turmas e convide as pessoas. O painel aparece assim que houver gente na turma.</div>`;return}
   const{data,error}=await S.sb.rpc("participacao",{t:turma});
   if(turma!==S.turmaSel)return;
@@ -1147,6 +1203,8 @@ async function renderPainel(){
   const aviso=error?`<div class="msg erro">Ainda falta ligar a participação no banco. No Supabase, abra o SQL Editor e rode o arquivo supabase-atualizacao-painel.sql. (Detalhe: ${esc(error.message||"")})</div>`:"";
   const totalReg=P.reduce((a,b)=>a+b.total,0),sem=P.filter(p=>!p.total).length;
   const linhas=count(L,"linhas"),sens=count(L,"sensacoes"),difs=count(L,"dificuldades");delete difs["Nada atrapalhou"];
+  const tm=new Set((tn&&tn.membros)||[]);
+  const RR=(S.todos||[]).filter(e=>tm.has(e.userId)&&e.userId!==S.uid).sort((a,b)=>(b.criadoEm||0)-(a.criadoEm||0));
   el.innerHTML=`${aviso}
     <div class="stats">
       <div class="stat"><b>${P.length}</b><span>${P.length===1?"cursista":"cursistas"}</span></div>
@@ -1155,15 +1213,20 @@ async function renderPainel(){
       <div class="stat"><b>${L.length}</b><span>no caderno</span></div>
     </div>
     <section class="cad"><h3>Participação por pessoa</h3>
-      ${P.length?`<ul class="membros part">${P.map(p=>`<li><span class="p"><b>${esc(p.nome||"Sem nome")}</b></span><span class="n ${p.total?"":"zero"}">${p.total?`${p.total} ${p.total>1?"registros":"registro"} · último em ${esc(fmtData((p.ultimo||"").slice(0,10)))}`:"ainda sem registro"}</span></li>`).join("")}</ul>
+      ${P.length?`<ul class="membros part">${P.map(p=>`<li><span class="p"><button type="button" class="pessoa-b" data-pessoa="${esc(p.id)}">${esc(p.nome||"Sem nome")}<span>ver registros</span></button></span><span class="n ${p.total?"":"zero"}">${p.total?`${p.total} ${p.total>1?"registros":"registro"} · último em ${esc(fmtData((p.ultimo||"").slice(0,10)))}`:"ainda sem registro"}</span></li>`).join("")}</ul>
       ${sem?`<p class="note">${sem} ${sem>1?"pessoas ainda não registraram":"pessoa ainda não registrou"} nada. Vale um convite gentil para a próxima gira.</p>`:""}`
       :`<p class="note">Ainda não há cursistas nesta turma. Convide pessoas na aba Turmas.</p>`}
-      <p class="note">Os números mostram só contagens. O que cada pessoa escreve no diário continua privado; você acompanha o que ela escolhe partilhar na roda, com autoria.</p>
+      <p class="note">Toque no nome de uma pessoa para ver todos os registros dela, inclusive os que ela não partilhou na roda.</p>
     </section>
     ${L.length?`<section class="cad"><h3>Linhas mais sentidas</h3>${bars(linhas)}</section>
     <section class="cad"><h3>Sensações mais comuns</h3>${bars(sens)}</section>
     ${Object.keys(difs).length?`<section class="cad"><h3>O que mais atrapalhou</h3>${bars(difs,"c")}</section>`:""}`
     :`<section class="cad"><h3>Dados coletados</h3><p class="note">Ainda não há registros autorizados para o caderno nesta turma. Quando houver, as linhas, sensações e dificuldades mais comuns aparecem aqui.</p></section>`}
+    <section class="cad"><h3>Registros recentes da turma</h3>
+      ${RR.length?`<div class="quotes">${RR.slice(0,6).map(e=>{const tx=(e.relato||e.momento||"").trim();
+        return`<blockquote>${esc(tx.length>160?tx.slice(0,160)+"…":(tx||"(sem texto, só linhas e sensações)"))}<cite><button type="button" class="pessoa-b" data-pessoa="${esc(e.userId)}">${esc(nomeDe(e.userId))}</button> · ${esc(fmtData(e.data))}${e.linhas&&e.linhas.length?" · "+esc(e.linhas.join(", ")):""}${e.partilha==="nao"?" · só você e a dirigente leem":""}</cite></blockquote>`}).join("")}</div>`
+      :`<p class="note">Ainda não há registros das cursistas nesta turma.</p>`}
+    </section>
     <section class="cad"><h3>Últimos relatos da roda</h3>
       ${R.length?`<div class="quotes">${R.slice(0,5).map(r=>{const real=r.autor||S.autoria[r.id],nm=real?((S.perfisMap[real]&&S.perfisMap[real].nome)||"Sem nome"):"autoria não registrada";
         const tx=(r.relato||r.momento||"").trim();return`<blockquote>${esc(tx.length>160?tx.slice(0,160)+"…":(tx||"(sem texto, só linhas e sensações)"))}<cite><b>${esc(nm)}</b> · ${esc(fmtData(r.data))}${r.linhas&&r.linhas.length?" · "+esc(r.linhas.join(", ")):""}${!r.autor&&real?" · sem nome para as colegas":""}</cite></blockquote>`}).join("")}</div>`
@@ -1175,14 +1238,52 @@ async function renderPainel(){
         <button class="btn ghost" type="button" id="pn-caderno">Ver caderno completo</button>
         <button class="btn ghost" type="button" id="pn-csv-part" ${P.length?"":"disabled"}>Baixar participação (CSV)</button>
         <button class="btn ghost" type="button" id="pn-csv-cad" ${L.length?"":"disabled"}>Baixar dados do caderno (CSV)</button>
+        <button class="btn ghost" type="button" id="pn-csv-reg" ${RR.length?"":"disabled"}>Baixar registros completos, com nome (CSV)</button>
       </div>
       <p class="note">O caderno é anônimo e só traz registros que cada pessoa autorizou.</p>
     </section>`;
   const dia=new Date().toISOString().slice(0,10),sl=slug(tn&&tn.nome);
   $("#pn-caderno").onclick=()=>show("caderno");$("#pn-roda").onclick=()=>show("roda");
+  el.querySelectorAll("[data-pessoa]").forEach(b=>b.onclick=()=>{S.fichaPessoa=b.dataset.pessoa;renderPainel();window.scrollTo({top:0})});
+  $("#pn-csv-reg").onclick=()=>baixarCSV(`registros-${sl}-${dia}.csv`,[["Nome","Data","Tipo","Contexto","Linhas","Sensações","Intensidade (1-5)","Entrega (1-5)","Percepções","Dificuldades","Ponto","Momento mais tocante","Relato","Partilha na roda","Caderno"],
+    ...RR.map(e=>[nomeDe(e.userId),e.data?fmtData(e.data):"",e.tipo,e.contexto,e.linhas,e.sensacoes,e.intensidade,e.entrega,e.percepcoes,e.dificuldades,e.ponto,e.momento,e.relato,e.partilha==="nao"?"não":e.partilha==="nome"?"com nome":"sem nome para as colegas",e.caderno==="sim"?"sim":"não"])]);
   $("#pn-csv-part").onclick=()=>baixarCSV(`participacao-${sl}-${dia}.csv`,[["Nome","Registros","Último registro"],...P.map(p=>[p.nome,p.total,p.ultimo?fmtData(p.ultimo.slice(0,10)):""])]);
   $("#pn-csv-cad").onclick=()=>baixarCSV(`caderno-${sl}-${dia}.csv`,[["Data","Tipo","Contexto","Linhas","Sensações","Intensidade (1-5)","Percepções","Dificuldades","Ponto mais tocante","Momento mais tocante"],
     ...L.map(e=>[e.data?fmtData(e.data):"",e.tipo,e.contexto,e.linhas,e.sensacoes,e.intensidade,e.percepcoes,e.dificuldades,e.ponto,e.momento])]);
+}
+
+function renderFicha(el,turma,tn){
+  const id=S.fichaPessoa,pf=S.perfisMap[id]||{},nome=pf.nome||"Sem nome";
+  const regs=(S.todos||[]).filter(e=>e.userId===id).sort((a,b)=>(b.data||"").localeCompare(a.data||"")||(b.criadoEm||0)-(a.criadoEm||0));
+  const noRoda=S.roda.filter(r=>r.turmaId===turma&&(r.autor===id||S.autoria[r.id]===id)).length;
+  const n=regs.length,mi=n?(regs.reduce((a,b)=>a+(+b.intensidade||0),0)/n).toFixed(1):"-";
+  const linhas=count(regs,"linhas"),sens=count(regs,"sensacoes");
+  const cartao=e=>`<article class="card"${corCard(e)}>
+      <div class="meta"><span class="who">${esc(fmtData(e.data))}</span>${e.tipo?`<span class="tipo">${esc(e.tipo)}</span>`:""}
+        <span>presença <span class="dots" aria-label="${e.intensidade} de 5">${dots(e.intensidade)}</span></span>
+        ${e.entrega?`<span>entrega <span class="dots" aria-label="${e.entrega} de 5">${dots(e.entrega)}</span></span>`:""}</div>
+      ${tagsL(e.linhas)}${tags(e.sensacoes,"s")}${tags(e.emocoes,"s")}
+      ${e.dificuldades&&e.dificuldades.length?`<p class="note">Atrapalhou: ${esc(e.dificuldades.join(", "))}</p>`:""}
+      ${moment(e)}${riscado(e)}
+      ${e.relato?`<p class="relato">${esc(e.relato)}</p>`:""}
+      <div class="meta"><span>${e.partilha==="nao"?"Não partilhado na roda":e.partilha==="nome"?"Partilhado com nome":"Partilhado sem nome para as colegas"}</span><span>${e.caderno==="sim"?"No caderno, sem nome":"Fora do caderno"}</span></div>
+    </article>`;
+  el.innerHTML=`<div class="ficha-topo">
+      <div><button class="btn ghost" type="button" id="fc-volta">Voltar ao painel</button></div>
+      <h3>${esc(nome)}</h3>
+      <p class="note" style="margin:0">${esc(pf.email||"")}${tn?" · "+esc(tn.nome):""}</p>
+    </div>
+    <div class="stats">
+      <div class="stat"><b>${n}</b><span>${n===1?"registro":"registros"}</span></div>
+      <div class="stat"><b>${mi}</b><span>presença média</span></div>
+      <div class="stat"><b>${noRoda}</b><span>na roda</span></div>
+    </div>
+    ${n?`<section class="cad"><h3>Linhas mais sentidas</h3>${bars(linhas)}</section>
+    <section class="cad"><h3>Sensações mais comuns</h3>${bars(sens)}</section>
+    <section class="cad"><h3>Todos os registros</h3><p class="note">Você vê tudo o que ${esc(nome.split(" ")[0])} escreveu, inclusive o que ela não partilhou na roda.</p>
+      <div class="ficha-lista">${regs.map(cartao).join("")}</div></section>`
+    :`<section class="cad"><p class="note">Esta pessoa ainda não fez nenhum registro.</p></section>`}`;
+  $("#fc-volta").onclick=()=>{S.fichaPessoa=null;renderPainel();window.scrollTo({top:0})};
 }
 
 function renderAll(){renderMinhas();renderMapa();renderRoda();renderCaderno()}
@@ -1193,19 +1294,22 @@ async function carregar(){
   const q=await Promise.all([
     S.sb.from("turmas").select("id,nome,criado_em").order("criado_em"),
     S.sb.from("membros").select("turma_id,user_id"),
-    S.sb.from("registros").select("id,dados,criado_em").order("criado_em",{ascending:false}),
+    S.sb.from("registros").select("id,user_id,dados,criado_em").order("criado_em",{ascending:false}).limit(3000),
     S.sb.from("roda").select("id,turma_id,autor_id,dados,criado_em").order("criado_em",{ascending:false}).limit(300),
     S.sb.from("caderno").select("id,turma_id,dados").limit(2000),
     S.sb.from("perfis").select("id,nome,email,papel").order("nome"),
     S.admin?S.sb.from("convites").select("*").order("criado_em",{ascending:false}):Promise.resolve({data:[]}),
-    S.admin?S.sb.from("roda_autoria").select("roda_id,user_id"):Promise.resolve({data:[]})
+    S.admin?S.sb.from("roda_autoria").select("roda_id,user_id"):Promise.resolve({data:[]}),
+    S.sb.from("roda_reacoes").select("roda_id,user_id,tipo").limit(5000)
   ]);
   if(q.slice(0,7).some(r=>r.error)){toast("Não foi possível carregar tudo. Confira sua conexão.");}
   S.autoriaErro=!!(q[7]&&q[7].error);
-  const [t,m,reg,ro,ca,pf,cv,au]=q.map(r=>r.data||[]);
+  const [t,m,reg,ro,ca,pf,cv,au,re]=q.map(r=>r.data||[]);
+  S.reacoes=re;S.reacoesErro=!!(q[8]&&q[8].error);
   S.autoria=Object.fromEntries(au.map(a=>[a.roda_id,a.user_id]));
   S.turmas=t.map(x=>({id:x.id,nome:x.nome,membros:m.filter(y=>y.turma_id===x.id).map(y=>y.user_id)}));
-  S.minhas=reg.map(r=>({...r.dados,id:r.id}));
+  S.minhas=reg.filter(r=>r.user_id===S.uid).map(r=>({...r.dados,id:r.id}));
+  S.todos=reg.map(r=>({...r.dados,id:r.id,userId:r.user_id}));
   S.roda=ro.map(r=>({...r.dados,id:r.id,turmaId:r.turma_id,autor:r.autor_id}));
   S.caderno=ca.map(c=>({...c.dados,id:c.id,turmaId:c.turma_id}));
   S.pessoas=pf;S.perfisMap=Object.fromEntries(pf.map(p=>[p.id,p]));S.convites=cv;
