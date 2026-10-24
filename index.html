@@ -507,7 +507,7 @@ nav.tabs button .ic{width:16px;height:16px}
   <!-- RODA -->
   <section id="p-roda" role="tabpanel" hidden>
     <h2>Roda de partilha</h2>
-    <p class="lead" id="roda-lead">Relatos que a turma escolheu partilhar. Aqui ninguém julga a experiência do outro. Responda com Axé, Laroyê ou Okê Caboclo e deixe uma palavra de acolhimento.</p>
+    <p class="lead" id="roda-lead">Relatos que a turma escolheu partilhar. Aqui ninguém julga a experiência do outro. Responda com Axé, Laroyê ou Saravá e deixe uma palavra de acolhimento.</p>
     <div class="turmabar" id="roda-filtro" hidden></div>
     <div class="list" id="roda"></div>
   </section>
@@ -865,7 +865,7 @@ function renderMinhas(){
 
 async function renderRoda(){
   const el=$("#roda"),fl=$("#roda-filtro");
-  $("#roda-lead").textContent=S.admin?"Todos os relatos que a turma partilhou. Só você, dirigente, vê a autoria de cada um, mesmo quando a pessoa escolheu não mostrar o nome às colegas.":"Relatos que a turma escolheu partilhar. Aqui ninguém julga a experiência do outro. Responda com Axé, Laroyê ou Okê Caboclo e deixe uma palavra de acolhimento.";
+  $("#roda-lead").textContent=S.admin?"Todos os relatos que a turma partilhou. Só você, dirigente, vê a autoria de cada um, mesmo quando a pessoa escolheu não mostrar o nome às colegas.":"Relatos que a turma escolheu partilhar. Aqui ninguém julga a experiência do outro. Responda com Axé, Laroyê ou Saravá e deixe uma palavra de acolhimento.";
   fl.hidden=true;
   if(!S.turmaSel){el.innerHTML=`<div class="empty"><b>Você ainda não está numa turma</b>${S.admin?"Crie uma turma na aba Turmas para abrir a roda.":"A roda aparece assim que o dirigente te colocar numa turma."}</div>`;return}
   const autorReal=r=>r.autor||S.autoria[r.id]||null;
@@ -904,7 +904,7 @@ async function renderRoda(){
 const REAC=[
  {t:"axe",w:"Axé",m:"força vital, recebo o seu relato",k:"estrela"},
  {t:"laroye",w:"Laroyê",m:"salve Exu, o mensageiro",k:"exu"},
- {t:"oke",w:"Okê Caboclo",m:"salve o Caboclo, a força da mata",k:"caboclo"}
+ {t:"oke",w:"Saravá",m:"salve! que a força te acompanhe",k:"folha"}
 ];
 const nomeDe=id=>(S.perfisMap[id]&&S.perfisMap[id].nome)||"Sem nome";
 function reacHTML(id){
